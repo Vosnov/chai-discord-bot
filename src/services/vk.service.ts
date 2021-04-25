@@ -101,7 +101,7 @@ export class VkService {
 
   private mediumSizePhoto(sizes: ISize[]): ISize | undefined {
     const sortSizes = sizes.sort((a, b) => a.width - b.width)
-    return sortSizes[sortSizes.length - Math.floor(sortSizes.length / 2) - 2]
+    return sortSizes[sortSizes.length - Math.floor(sortSizes.length / 2) - 1]
   }
 
   private takePhoto(attachments: IAttachment[]) {

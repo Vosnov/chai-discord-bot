@@ -37,7 +37,8 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
       await user.save()
     }
 
-    this.sendDefaultMessage('Группы удалены!', this.color, msg)
+    const description = args.length > 1 ? 'Группы удалены!' : 'Группа удалена!'
+    this.sendDefaultMessage(description, this.color, msg)
   }
 
 }

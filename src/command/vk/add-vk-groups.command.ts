@@ -51,7 +51,8 @@ export default class AddVkGroupsCommand extends Command implements ICommand {
 
     user.vkGroup.push(...groupModels)
     await user.save()
-    this.sendDefaultMessage("Группы успешно сохранены!", this.color, msg)
+    const description = args.length > 1 ? 'Группы успешно сохранены!' : 'Группа успешно сохранена!'
+    this.sendDefaultMessage(description, this.color, msg)
   }
 
 }

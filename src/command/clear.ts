@@ -6,12 +6,11 @@ export class Clear extends Command implements ICommand {
   description = "Очистка сообщений от бота"
 
   async run(msg: Discord.Message): Promise<void> {
-    msg.channel.messages.fetch({limit: 50}).then(messages => {
-      const botMessages = messages.filter(msg => msg.author.bot)
-      if (msg.channel instanceof Discord.TextChannel) {
-        msg.channel.bulkDelete(botMessages)
-      }
-    })
+    const messages = await msg.channel.messages.fetch({limit: 80})
+    const botMessages = messages.filter(msg => msg.author.bot)
+    if (msg.channel instanceof Discord.TextChannel) {
+      msg.channel.bulkDelete(botMessages)
+    }
   }
 
 }

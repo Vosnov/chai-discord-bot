@@ -22,7 +22,8 @@ const schema = new mongoose.Schema<IMemeModel>({
   domain: {type: String, required: false},
   text: {type: String, required: false},
   date: {type: Number, required: true},
-  urls: [{type: String, required: true}]
+  urls: [{type: String, required: true}],
+  expire_at: {type: Date, default: Date.now, expires: '14 days'}
 }, {
   timestamps: true,
 });
