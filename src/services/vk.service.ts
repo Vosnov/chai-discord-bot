@@ -22,6 +22,7 @@ interface IWallItem {
   id: number,
   attachments?: IAttachment[]
   date: number
+  is_pinned?: number
   copyright?: {
     id: number
   }
@@ -135,9 +136,11 @@ export class VkService {
 
       res.data.response?.items?.forEach(item => {
         if (item?.copyright?.id) return
+        if (item.is_pinned) return
+        if (item.text.length > 1000) return;
+        
         const images: string[] = this.takePhoto(item?.attachments || [])
         if (!images.length) return;
-        if (item.text.length > 1000) return;
 
         const meme: IMeme = {
           memeId: item.id,
