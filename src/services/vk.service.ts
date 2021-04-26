@@ -138,6 +138,8 @@ export class VkService {
         if (item?.copyright?.id) return
         if (item.is_pinned) return
         if (item.text.length > 1000) return;
+        // ad filter
+        if (item.text.includes("vk.com")) return
         
         const images: string[] = this.takePhoto(item?.attachments || [])
         if (!images.length) return;

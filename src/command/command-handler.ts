@@ -9,7 +9,7 @@ import ShowVkGroupsCommand from "./vk/show-vk-groups.command";
 import HelpCommand from "./help.command";
 import { ICommand } from './command';
 
-const PREFIX = '!'
+export const PREFIX = 'c!'
 const COOLDOWN_TIME = 5;
 const cooldown = new Set()
 

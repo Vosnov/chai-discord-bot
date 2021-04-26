@@ -1,6 +1,6 @@
 import Discord from 'discord.js'
 import dotnev from 'dotenv'
-import {commandHandler} from "./command/command-handler";
+import {commandHandler, PREFIX} from "./command/command-handler";
 import mongoose from 'mongoose'
 
 dotnev.config()
@@ -21,7 +21,7 @@ const start = async () => {
   });
 
   await client.login(process.env.BOT_TOKEN);
-  client.user?.setActivity('!help - to help', { type: 'PLAYING' });
+  client.user?.setActivity(`${PREFIX}help - to help`, { type: 'PLAYING' });
 }
 
 start()
