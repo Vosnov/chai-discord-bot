@@ -8,8 +8,7 @@ import RemoveVkGroupsCommand from "./vk/remove-vk-groups.command";
 import ShowVkGroupsCommand from "./vk/show-vk-groups.command";
 import HelpCommand from "./help.command";
 import { ICommand } from './command';
-import { SendRandomGifCommand } from './giphy/send-random-gif.command';
-import FindGifCommand from './giphy/find-gif.command';
+import SendRandomGifCommand from './gif/send-random-gif.command';
 
 export const PREFIX = 'c!'
 const COOLDOWN_TIME = 5;
@@ -41,7 +40,7 @@ export const commandHandler = (msg: Discord.Message) => {
   }
 }
 
-export const commands: ICommand[] = [
+export const vkCommands = [
   new HelpCommand(),
   new AddVkGroupsCommand(),
   new ShowVkGroupsCommand(),
@@ -50,7 +49,13 @@ export const commands: ICommand[] = [
   new SendVkMemeCommand(),
   new Clear(),
   new RandomNumberCommand(),
+]
 
+export const gifCommands = [
   new SendRandomGifCommand(),
-  new FindGifCommand()
+]
+
+export const commands: ICommand[] = [
+  ...vkCommands,
+  ...gifCommands
 ]

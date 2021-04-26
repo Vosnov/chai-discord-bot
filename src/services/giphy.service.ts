@@ -1,7 +1,4 @@
 import axios from "axios";
-import dotnev from "dotenv";
-
-dotnev.config()
 
 interface IGif {
   type: 'gif' | string
@@ -13,7 +10,7 @@ interface IGif {
 }
 
 interface IGiphyDto {
-  data: IGif
+  data?: IGif
 }
 
 export default class GiphyService {
@@ -34,6 +31,8 @@ export default class GiphyService {
     const url = this.baseURL + 'random?' + this.key + tagUrl
     
     const res = await axios.get<IGiphyDto>(url)
+    
+    if (!res.data.data?.id) return undefined
     return res.data.data
   }
 }

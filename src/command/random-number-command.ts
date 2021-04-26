@@ -5,7 +5,7 @@ export class RandomNumberCommand extends Command implements ICommand {
   commandNames: string[] = ['random', 'rnd'];
   description = 'Случайное число'
 
-  private static randomInteger(min: number, max: number) {
+  public static randomInteger(min: number, max: number) {
     const rand = min + Math.random() * (max + 1 - min);
     return Math.floor(rand);
   }
