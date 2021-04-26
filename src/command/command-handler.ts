@@ -8,6 +8,8 @@ import RemoveVkGroupsCommand from "./vk/remove-vk-groups.command";
 import ShowVkGroupsCommand from "./vk/show-vk-groups.command";
 import HelpCommand from "./help.command";
 import { ICommand } from './command';
+import { SendRandomGifCommand } from './giphy/send-random-gif.command';
+import FindGifCommand from './giphy/find-gif.command';
 
 export const PREFIX = 'c!'
 const COOLDOWN_TIME = 5;
@@ -48,4 +50,7 @@ export const commands: ICommand[] = [
   new SendVkMemeCommand(),
   new Clear(),
   new RandomNumberCommand(),
+
+  new SendRandomGifCommand(),
+  new FindGifCommand()
 ]
