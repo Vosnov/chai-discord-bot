@@ -19,21 +19,19 @@ interface Result {
 export default class TenorService {
   baseURL = 'https://api.tenor.com/v1/'
   key = `key=${process.env.TENOR_KEY}&`
-  filters = `limit=1&media_filter=minimal&`
+  filters = '&media_filter=minimal&'
 
-  async randomGif(searchValue = 'meme') {
+  async randomGifs(searchValue = 'meme', limit = 5) {
     const valueUrl = `q=${searchValue}&`
-    const url = this.baseURL + 'random?' + this.key + valueUrl + this.filters
+    const limitUrl = `limit=${limit}&`
+    const url = this.baseURL + 'random?' + this.key + valueUrl + this.filters + limitUrl
     
-    console.log(url)
-    const gif = await this.getGif(url)
-    return gif
+    const gifUrls = await this.getGifUrls(url)
+    return gifUrls
   }
 
-  private async getGif(url: string) {
+  private async getGifUrls(url: string) {
     const res = await axios.get<TenorDto>(url)
-    console.log(res.data)
-    const gif =  res.data?.results[0].media[0].gif
-    return gif
+    return res.data.results.map(res => res.media[0].gif.url)
   }
 }

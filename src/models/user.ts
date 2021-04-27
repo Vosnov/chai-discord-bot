@@ -8,13 +8,15 @@ export interface IUserModel extends mongoose.Document {
   channelName: string
   channelId: string
   vkGroup: IVkGroupModel[]
+  gifs: string[]
 }
 
 const schema = new mongoose.Schema<IUserModel>({
   queue: [{type: Types.ObjectId, ref: 'Meme'}],
   channelName: {type: String, required: true},
   channelId: {type: String, required: true, unique: true},
-  vkGroup: [{type: Types.ObjectId, ref: 'VkGroup'}]
+  vkGroup: [{type: Types.ObjectId, ref: 'VkGroup'}],
+  gifs: [{type: String}]
 }, {
   timestamps: true,
 })
