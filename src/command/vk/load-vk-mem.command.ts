@@ -14,11 +14,11 @@ export class LoadVkMemCommand extends Command implements ICommand {
   offset: number = 0
   vkService = new VkService(2, 0)
   defaultDomains = [
+    'achexd',
     'peregovorov',
     'mdlso',
     'amoraliron',
     'mentaldisordeer',
-    'amoralelite',
     'somka',
     'karkb'
   ]

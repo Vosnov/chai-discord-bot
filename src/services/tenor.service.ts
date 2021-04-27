@@ -1,5 +1,4 @@
 import axios from "axios"
-import { RandomNumberCommand } from "../command/random-number-command"
 
 interface TenorDto {
   results: Result[]
@@ -18,22 +17,23 @@ interface Result {
 }
 
 export default class TenorService {
-  baseURL = 'https://g.tenor.com/v1/'
+  baseURL = 'https://api.tenor.com/v1/'
   key = `key=${process.env.TENOR_KEY}&`
+  filters = `limit=1&media_filter=minimal&`
 
   async randomGif(searchValue = 'meme') {
     const valueUrl = `q=${searchValue}&`
-    const limit = `limit=1&`
-    const filter = `media_filter=minimal&`
-    const pos = `pos=${this.randomPos()}&`
-    const url = this.baseURL + 'random?' + this.key + valueUrl + limit + filter + pos
-
-    const res = await axios.get<TenorDto>(url)
-    const gif =  res.data?.results[0].media[0].gif
+    const url = this.baseURL + 'random?' + this.key + valueUrl + this.filters
+    
+    console.log(url)
+    const gif = await this.getGif(url)
     return gif
   }
 
-  private randomPos() {
-    return RandomNumberCommand.randomInteger(0, 1000);
+  private async getGif(url: string) {
+    const res = await axios.get<TenorDto>(url)
+    console.log(res.data)
+    const gif =  res.data?.results[0].media[0].gif
+    return gif
   }
 }

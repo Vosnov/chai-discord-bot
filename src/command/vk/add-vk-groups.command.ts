@@ -6,7 +6,7 @@ import Command, {ICommand} from "../command";
 
 export default class AddVkGroupsCommand extends Command implements ICommand {
   commandNames = ['add', 'a'];
-  description = 'Добавить группу в спсиок'
+  description = 'Добавить группу в спиcок'
 
   readonly GROUP_LIMIT = 10;
 

@@ -29,11 +29,24 @@ export class SendVkMemeCommand extends Command implements ICommand {
 
     const meme = this.getRandomMeme(user?.queue);
     if (meme) {
-      msg.channel.send(meme?.text, {files: meme.urls})
+      this.sendMessage(meme, msg)
 
       user.queue = user?.queue.filter(qMeme => qMeme._id !== meme._id);
       meme.delete()
       user?.save()
+    }
+  }
+
+  private sendMessage(meme: IMemeModel, msg: Discord.Message) {
+    if (meme.urls.length === 1) {
+      const embed = new Discord.MessageEmbed()
+        .setDescription(meme.text)
+        .setImage(meme.urls[0])
+        .setColor(this.color)
+      
+      msg.channel.send(embed)
+    } else {
+      msg.channel.send(meme?.text, {files: meme.urls})
     }
   }
 

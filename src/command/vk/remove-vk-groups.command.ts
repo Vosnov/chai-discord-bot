@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import {UserModel} from "../../models/user";
+import {IUserModel, UserModel} from "../../models/user";
 import {VkGroupModel} from "../../models/vkGroup";
 import Command, { ICommand } from '../command';
 
@@ -25,6 +25,8 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
       await VkGroupModel.deleteMany({ownerId: user._id})
       user.vkGroup = []
       await user.save();
+
+      this.sendDefaultMessage('Группы удалены!', this.color, msg)
     } else {
       const groupNumbers = args.map(arg => Number(arg)).filter(num => !!num);
 
@@ -35,22 +37,33 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
         return
       }
 
-      for (const num of groupNumbers) {
-        const group = user.vkGroup[num - 1];
-        if (group) {
-          user.vkGroup = user.vkGroup.filter(userGroup => userGroup._id !== group._id)
-          group.delete()
-        } else {
-          this.sendDefaultMessage(`Группа под номером: ${num} не найдеа`, this.errorColor, msg)
-          return
-        }
+      const accept = async () => {
+        await user.save()
+        const description = args.length > 1 ? 'Группы удалены!' : 'Группа удалена!'
+        this.sendDefaultMessage(description, this.color, msg)
       }
 
-      await user.save()
+      const err = (num: number) => {
+        this.sendDefaultMessage(`Группа под номером: ${num} не найдеа`, this.errorColor, msg)
+      }
+
+      this.deleteGroups(groupNumbers, user, accept, err)
+    }
+  }
+
+  deleteGroups(groupNumbers: number[], user: IUserModel, accept: () => void, err: (num: number) => void) {
+    for (const num of groupNumbers) {
+      const group = user.vkGroup[num - 1];
+      if (group) {
+        user.vkGroup = user.vkGroup.filter(userGroup => userGroup._id !== group._id)
+        group.delete()
+      } else {
+        err(num)
+        return
+      }
     }
 
-    const description = args.length > 1 ? 'Группы удалены!' : 'Группа удалена!'
-    this.sendDefaultMessage(description, this.color, msg)
+    accept()
   }
 
 }
