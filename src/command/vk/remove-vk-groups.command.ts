@@ -27,13 +27,25 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
       await user.save();
     } else {
       const groupNumbers = args.map(arg => Number(arg)).filter(num => !!num);
-      groupNumbers.forEach(num => {
+
+      if (!groupNumbers.length) {
+        const command = '`' + this.commandNames[0] + '`'
+        const description = 'Команда ' + command + ' может принимать только числа'
+        this.sendDefaultMessage(description, this.errorColor, msg)
+        return
+      }
+
+      for (const num of groupNumbers) {
         const group = user.vkGroup[num - 1];
         if (group) {
           user.vkGroup = user.vkGroup.filter(userGroup => userGroup._id !== group._id)
           group.delete()
+        } else {
+          this.sendDefaultMessage(`Группа под номером: ${num} не найдеа`, this.errorColor, msg)
+          return
         }
-      })
+      }
+
       await user.save()
     }
 

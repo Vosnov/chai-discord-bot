@@ -1,6 +1,7 @@
 import Discord from 'discord.js'
 import {UserModel} from "../../models/user";
 import Command, { ICommand } from '../command';
+import { vkCommands } from '../command-handler';
 
 export default class ShowVkGroupsCommand extends Command implements ICommand {
   commandNames: string[] = ['show', 's'];
@@ -13,7 +14,7 @@ export default class ShowVkGroupsCommand extends Command implements ICommand {
     const user = candidate ? candidate : await this.createUserModel(msg)
 
     if (!user.vkGroup.length) {
-      this.sendDefaultMessage('Список групп пуст!', this.color, msg)
+      this.sendDefaultMessage('Список групп пуст! Группы можно пополонить командой `add`', this.color, msg)
       return
     }
 
