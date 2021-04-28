@@ -4,8 +4,8 @@ import {Model, Types} from "mongoose";
 
 export interface IGroup {
   groupId: number
-  domain: string,
   name: string
+  postCount?: number
 }
 
 export interface IVkGroupModel extends mongoose.Document, IGroup {
@@ -15,8 +15,8 @@ export interface IVkGroupModel extends mongoose.Document, IGroup {
 const schema = new mongoose.Schema<IVkGroupModel>({
   ownerId: {type: Types.ObjectId, ref: 'User', required: true},
   groupId: {type: Number, required: true},
-  domain: {type: String},
-  name: {type: String}
+  name: {type: String, default: ''},
+  postCount: {type: Number, required: false}
 })
 
 export const VkGroupModel: Model<IVkGroupModel> = mongoose.model('VkGroup', schema)

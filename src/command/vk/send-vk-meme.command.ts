@@ -1,11 +1,14 @@
 import Discord from 'discord.js'
-import {UserModel} from "../../models/user";
-import {IMemeModel} from "../../models/meme";
+import {IUserModel, UserModel} from "../../models/user";
+import {IMeme, IMemeModel, MemeModel} from "../../models/meme";
 import Command, { ICommand } from '../command';
+import { VkService } from '../../services/vk.service';
 
 export class SendVkMemeCommand extends Command implements ICommand {
   commandNames = ['meme', 'mem', 'm'];
   description = 'Отправить мем'
+
+  vkService = new VkService()
 
   private getRandomMeme(memes: IMemeModel[] | undefined) {
     if (!memes) return undefined
@@ -14,18 +17,12 @@ export class SendVkMemeCommand extends Command implements ICommand {
 
   async run(msg: Discord.Message): Promise<void> {
     const candidate = await UserModel.findOne({channelId: msg.guild?.id})
+      .populate('vkGroup')
       .populate("queue")
       .exec()
     const user = candidate ? candidate : this.createUserModel(msg)
 
-    if (!user.queue.length) {
-      this.sendDefaultMessage(
-        'Мемов нет :( Используйте `load` [page] для загрузки мемов.' +
-        ' Где [page] номер страници. По умолчанию page = 0.',
-        this.color,
-        msg
-      )
-    }
+    if (user.queue.length < 2) await this.loadMemes(user)
 
     const meme = this.getRandomMeme(user?.queue);
     if (meme) {
@@ -34,6 +31,8 @@ export class SendVkMemeCommand extends Command implements ICommand {
       user.queue = user?.queue.filter(qMeme => qMeme._id !== meme._id);
       meme.delete()
       user?.save()
+    } else {
+      this.sendDefaultMessage('Мемы закончились :( Попробуйте в другой раз', this.color, msg)
     }
   }
 
@@ -50,4 +49,28 @@ export class SendVkMemeCommand extends Command implements ICommand {
     }
   }
 
+  private async loadMemes(user: IUserModel) {
+    const walls = await this.vkService.getAllMemes(user.vkGroup)
+
+    const memes: IMeme[] = [] 
+    walls.forEach(wall => {
+      memes.push(...wall.memes)
+
+      const userGroup = user.vkGroup.find(group => group.groupId === wall.groupId)
+
+      if (userGroup) {
+        userGroup.postCount = wall.count
+        userGroup?.save()
+      }
+    })
+
+    const memeModels: IMemeModel[] = []
+    memes.forEach(meme => {
+      const memeModel = new MemeModel({...meme, ownerId: user._id})
+      memeModels.push(memeModel)
+      memeModel.save()
+    })
+    
+    user.queue = memeModels;
+  }
 }

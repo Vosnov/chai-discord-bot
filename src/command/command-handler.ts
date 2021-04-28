@@ -2,7 +2,6 @@ import Discord from 'discord.js'
 import {SendVkMemeCommand} from "./vk/send-vk-meme.command";
 import {Clear} from "./clear";
 import {RandomNumberCommand} from "./random-number-command";
-import {LoadVkMemCommand} from "./vk/load-vk-mem.command";
 import AddVkGroupsCommand from "./vk/add-vk-groups.command";
 import RemoveVkGroupsCommand from "./vk/remove-vk-groups.command";
 import ShowVkGroupsCommand from "./vk/show-vk-groups.command";
@@ -45,7 +44,6 @@ export const vkCommands = [
   new AddVkGroupsCommand(),
   new ShowVkGroupsCommand(),
   new RemoveVkGroupsCommand(),
-  new LoadVkMemCommand(),
   new SendVkMemeCommand(),
   new Clear(),
   new RandomNumberCommand(),

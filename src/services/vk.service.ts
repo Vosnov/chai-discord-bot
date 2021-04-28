@@ -1,10 +1,11 @@
 import axios from "axios";
 import dotnev from "dotenv";
+import { RandomNumberCommand } from "../command/random-number-command";
 import {IMeme} from "../models/meme";
-import {IGroup} from "../models/vkGroup";
+import {IGroup, IVkGroupModel} from "../models/vkGroup";
 dotnev.config()
 
-interface IWall {
+interface IWallDto {
   response: {
     count: number,
     items?: IWallItem[]
@@ -51,48 +52,29 @@ interface IGroupDto {
   }[]
 }
 
-export class VkService {
-  baseURL = "https://api.vk.com/method/"
+interface IWall {
+  groupId: number
   count: number
-  offset: number
+  memes: IMeme[]
+}
+
+export class VkService {
+  readonly MEME_LIMIT = 50
+  baseURL = "https://api.vk.com/method/"
   access: string;
 
-  setCount(count = 2) {
-    this.count = count
-    return this;
-  }
-
-  setOffset(offset = 0) {
-    this.offset = offset
-    return this
-  }
-
-  constructor(count: number = 1, offset: number = 0) {
+  constructor() {
     const {VK_TOKEN, VK_VERSION} = process.env
 
-    this.count = count
-    this.offset = offset;
     this.access = `&access_token=${VK_TOKEN}&v=${VK_VERSION}`
   }
 
-  public getAllMemes(groupIds?: number[], domains?: string[]) {
-    if (!groupIds && !domains) {
-      return new Promise<IMeme[]>(() => [])
-    }
+  public async getAllMemes(groupModels: IVkGroupModel[]) {
+    if (!groupModels.length) return new Promise<IWall[]>(() => [])
 
-    let wallMemes: Promise<IMeme[] | undefined>[] = [];
-
-    if (domains) wallMemes = domains.map(domain => this.wallMemes(undefined, domain))
-    if (groupIds) wallMemes = groupIds.map(id => this.wallMemes(id))
-
-    return Promise.all(wallMemes)
-      .then((memes) => {
-        const data: IMeme[] = []
-        memes.forEach(meme => {
-          if (meme) data.push(...meme)
-        })
-        return data
-      })
+    const count = Math.ceil(this.MEME_LIMIT / groupModels.length)
+    const wallMemes = groupModels.map(group => this.wallMemes(group.groupId, group.postCount, 3));
+    return await Promise.all(wallMemes)
   }
 
   private maxSizePhoto(sizes: ISize[]): ISize | undefined {
@@ -123,31 +105,33 @@ export class VkService {
     return images
   }
 
-  public wallMemes(id?: number, domain?: string) {
+  public wallMemes(id: number, postCount = 100, count = 10): Promise<IWall> {
     const owner = id ? `&owner_id=-${id}` : ""
-    const domainReq = domain ? `&domain=${domain}` : ""
-    let options = `?count=${this.count}&offset=${this.offset}&filter=owner` + owner + domainReq
+    let offset = RandomNumberCommand.randomInteger(0, postCount)
+    
+    if (offset - count > 0) offset -= count
+
+    let options = `?count=${count}&offset=${offset}&filter=owner` + owner
 
     const url = `${this.baseURL}/wall.get` + options + this.access
+    console.log(url)
     const memes: IMeme[] = []
 
-    return axios.get<IWall>(url).then(res => {
-      if (res.data?.error?.error_msg) return
-
+    return axios.get<IWallDto>(url).then(res => {
       res.data.response?.items?.forEach(item => {
         if (item?.copyright?.id) return
         if (item.is_pinned) return
-        if (item.text.length > 1000) return;
+        if (item.text.length > 500) return
+
         // ad filter
         if (item.text.includes("vk.com")) return
         
         const images: string[] = this.takePhoto(item?.attachments || [])
-        if (!images.length) return;
+        if (!images.length) return
 
         const meme: IMeme = {
           memeId: item.id,
           ownerGroupId: item.owner_id,
-          domain: domain || '',
           urls: images,
           date: item.date,
           text: item.text,
@@ -155,37 +139,27 @@ export class VkService {
         memes.push(meme)
       })
 
-      return memes;
-    })
-  }
-
-  public findGroup(link: string): Promise<IGroup | undefined> {
-    const host = 'vk.com/'
-    const id = link.includes(host) ? link.slice(link.indexOf(host) + host.length) : link
-    const options = `?group_id=${id}`
-    const url = `${this.baseURL}/groups.getById` + options + this.access
-
-    return axios.get<IGroupDto>(url).then(data => {
-      const response = data?.data?.response;
-      if (response?.length) {
-        const dto = response[0];
-        if (!dto) return
-        const group: IGroup = {
-          groupId: dto?.id || -1,
-          name: dto.name || '',
-          domain: id
-        }
-        return group
+      return {
+        count: res.data.response.count,
+        memes,
+        groupId: id
       }
     })
   }
 
-  public findGroups(links: string[]) {
-    const ids: Promise<IGroup | undefined>[] = []
-    links.forEach(link => {
-      ids.push(this.findGroup(link))
-    })
+  public async findGroups(links: string[]) {
+    const options = `?group_ids=${links.join(',')}`
+    const url = `${this.baseURL}/groups.getById` + options + this.access
 
-    return Promise.all(ids)
+    const groupDto = await axios.get<IGroupDto>(url)
+    const groups = groupDto.data.response?.map(res => {
+      const group: IGroup = {
+        groupId: res.id || -1,
+        name: res.name || '',
+      }
+      return group;
+    }) || []
+
+    return groups
   }
 }

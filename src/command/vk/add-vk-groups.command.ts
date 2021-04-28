@@ -1,7 +1,7 @@
 import Discord from 'discord.js'
 import {VkService} from "../../services/vk.service";
 import {UserModel} from "../../models/user";
-import {IGroup, IVkGroupModel, VkGroupModel} from "../../models/vkGroup";
+import {IVkGroupModel, VkGroupModel} from "../../models/vkGroup";
 import Command, {ICommand} from "../command";
 
 export default class AddVkGroupsCommand extends Command implements ICommand {
@@ -35,21 +35,21 @@ export default class AddVkGroupsCommand extends Command implements ICommand {
     }
 
     let groups = await new VkService().findGroups(args)
-    const filteredGroups = groups.filter(group => group !== undefined) as IGroup[]
 
-    if (!filteredGroups.length) {
+    if (!groups.length) {
       this.sendDefaultMessage('Ошибка! Введите корректный адрес группы.', this.errorColor, msg)
       return
     }
 
     const groupModels: IVkGroupModel[] = []
-    filteredGroups.forEach(group => {
+    groups.forEach(group => {
       const model = new VkGroupModel({...group, ownerId: user._id})
       groupModels.push(model)
       model.save()
     })
 
     user.vkGroup.push(...groupModels)
+    user.queue = []
     await user.save()
     const description = args.length > 1 ? 'Группы успешно сохранены!' : 'Группа успешно сохранена!'
     this.sendDefaultMessage(description, this.color, msg)
