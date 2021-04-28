@@ -1,5 +1,6 @@
 import axios from "axios";
 import dotnev from "dotenv";
+import { group } from "node:console";
 import { RandomNumberCommand } from "../command/random-number-command";
 import {IMeme} from "../models/meme";
 import {IGroup, IVkGroupModel} from "../models/vkGroup";
@@ -73,7 +74,7 @@ export class VkService {
     if (!groupModels.length) return new Promise<IWall[]>(() => [])
 
     const count = Math.ceil(this.MEME_LIMIT / groupModels.length)
-    const wallMemes = groupModels.map(group => this.wallMemes(group.groupId, group.postCount, 3));
+    const wallMemes = groupModels.map(group => this.wallMemes(group.groupId, group.postCount, count));
     return await Promise.all(wallMemes)
   }
 
@@ -114,7 +115,6 @@ export class VkService {
     let options = `?count=${count}&offset=${offset}&filter=owner` + owner
 
     const url = `${this.baseURL}/wall.get` + options + this.access
-    console.log(url)
     const memes: IMeme[] = []
 
     return axios.get<IWallDto>(url).then(res => {
@@ -138,7 +138,7 @@ export class VkService {
         }
         memes.push(meme)
       })
-
+      
       return {
         count: res.data.response.count,
         memes,
@@ -161,5 +161,20 @@ export class VkService {
     }) || []
 
     return groups
+  }
+
+  public async getDefaultGroupWalls() {
+    const groups = [
+      {id: 187263168, count: 4600}, // achexd
+      {id: 12353330, count: 40000}, // peregovorov
+      {id: 158619277, count: 900}, // mdlso
+      {id: 158815806, count: 2600 }, // amoraliron
+      {id: 154168174, count: 17000}, // mentaldisordeer
+      {id: 142574308, count: 14000}, // somka
+      {id: 155464693, count: 31000} // karkb
+    ]
+
+    const walls = groups.map(group => this.wallMemes(group.id, group.count, 7))
+    return Promise.all(walls)
   }
 }

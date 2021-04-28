@@ -3,6 +3,7 @@ import {VkService} from "../../services/vk.service";
 import {UserModel} from "../../models/user";
 import {IVkGroupModel, VkGroupModel} from "../../models/vkGroup";
 import Command, {ICommand} from "../command";
+import { MemeModel } from '../../models/meme';
 
 export default class AddVkGroupsCommand extends Command implements ICommand {
   commandNames = ['add', 'a'];
@@ -50,6 +51,7 @@ export default class AddVkGroupsCommand extends Command implements ICommand {
 
     user.vkGroup.push(...groupModels)
     user.queue = []
+    MemeModel.deleteMany({ownerId: user._id})
     await user.save()
     const description = args.length > 1 ? 'Группы успешно сохранены!' : 'Группа успешно сохранена!'
     this.sendDefaultMessage(description, this.color, msg)

@@ -1,4 +1,5 @@
 import Discord from 'discord.js'
+import { MemeModel } from '../../models/meme';
 import {IUserModel, UserModel} from "../../models/user";
 import {VkGroupModel} from "../../models/vkGroup";
 import Command, { ICommand } from '../command';
@@ -39,6 +40,7 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
 
       const accept = async () => {
         user.queue = []
+        MemeModel.deleteMany({ownerId: user._id})
         await user.save()
         const description = args.length > 1 ? 'Группы удалены!' : 'Группа удалена!'
         this.sendDefaultMessage(description, this.color, msg)

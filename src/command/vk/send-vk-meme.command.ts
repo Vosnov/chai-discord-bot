@@ -22,6 +22,13 @@ export class SendVkMemeCommand extends Command implements ICommand {
       .exec()
     const user = candidate ? candidate : this.createUserModel(msg)
 
+    if (!user.vkGroup.length) {
+      const walls = await this.vkService.getDefaultGroupWalls()
+      const memes: IMeme[] = []
+      walls.forEach(wall => memes.push(...wall.memes))
+      user.queue = this.createMemeModels(memes, user)
+    }
+
     if (user.queue.length < 2) await this.loadMemes(user)
 
     const meme = this.getRandomMeme(user?.queue);
@@ -63,14 +70,17 @@ export class SendVkMemeCommand extends Command implements ICommand {
         userGroup?.save()
       }
     })
+    
+    user.queue = this.createMemeModels(memes, user);
+  }
 
+  private createMemeModels(memes: IMeme[], user: IUserModel) {
     const memeModels: IMemeModel[] = []
     memes.forEach(meme => {
       const memeModel = new MemeModel({...meme, ownerId: user._id})
       memeModels.push(memeModel)
       memeModel.save()
     })
-    
-    user.queue = memeModels;
+    return memeModels
   }
 }

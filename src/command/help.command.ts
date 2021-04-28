@@ -8,7 +8,7 @@ export default class HelpCommand extends Command implements ICommand {
   // vk
   addRemoveDescription = '`add`, `remove` - могут принимать несколько параметров. \n'
   // gif
-  gifDescription = '`gif`, `g` - могут принмать ключевое слово в качастве параметра. \n' +
+  gifDescription = '`gif`, `g` - могут принмать ключевое слово (на английском) в качастве параметра. \n' +
     'Например: `gif meme`. \n'
 
   getCmdNames(commands: ICommand[]) {
