@@ -8,6 +8,7 @@ import { MemeModel } from '../../models/meme';
 export default class AddVkGroupsCommand extends Command implements ICommand {
   commandNames = ['add', 'a'];
   description = 'Добавить группу в спиcок'
+  onlyManageGuild = true
 
   readonly GROUP_LIMIT = 10;
 

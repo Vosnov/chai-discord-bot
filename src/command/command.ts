@@ -4,6 +4,7 @@ import {UserModel} from "../models/user";
 export interface ICommand {
   commandNames: string[]
   description: string
+  onlyManageGuild?: boolean
   run: (msg: Discord.Message, args?: string[]) => Promise<void>
 }
 

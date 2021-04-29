@@ -4,15 +4,19 @@ import {gifCommands, vkCommands} from './command-handler'
 
 export default class HelpCommand extends Command implements ICommand {
   commandNames: string[] = ['help', 'h'];
-  description = 'Список команд'
+  description = 'Список команд.'
+
   // vk
   addRemoveDescription = '`add`, `remove` - могут принимать несколько параметров. \n'
   // gif
-  gifDescription = '`gif`, `g` - могут принмать ключевое слово (на английском) в качастве параметра. \n' +
+  gifDescription = '`gif`, `g` - могут принмать ключевое слово в качастве параметра. \n' +
     'Например: `gif meme`. \n'
 
   getCmdNames(commands: ICommand[]) {
-    return commands.map(cmd => cmd.commandNames.join(', ') + ` - ${cmd.description}`).join('\n')
+    return commands.map(cmd => {
+      const manageGuild = cmd.onlyManageGuild ? '* ' : ''
+      return manageGuild + cmd.commandNames.join(', ') + ` - ${cmd.description}`
+    }).join('\n')
   }
 
   async run(msg: Discord.Message, args: string[] | undefined) {
@@ -20,6 +24,7 @@ export default class HelpCommand extends Command implements ICommand {
     const gifCmdNames = this.getCmdNames(gifCommands)
 
     const embed = new Discord.MessageEmbed()
+      .setDescription('* - Только для владельцев возможности "Управлять сервером" или выше.')
       .setColor(this.color)
       .setTitle('Помощь')
       .addField('Vk Memes', this.addRemoveDescription + '```' + vkCmdNames + '```')

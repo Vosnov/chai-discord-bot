@@ -29,7 +29,7 @@ export class SendVkMemeCommand extends Command implements ICommand {
       user.queue = this.createMemeModels(memes, user)
     }
 
-    if (user.queue.length < 2) await this.loadMemes(user)
+    if (user.queue.length <= 1) await this.loadMemes(user)
 
     const meme = this.getRandomMeme(user?.queue);
     if (meme) {

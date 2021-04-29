@@ -32,8 +32,13 @@ export const commandHandler = (msg: Discord.Message) => {
 
     commands.forEach(command => {
       if (command.commandNames.includes(commandName)) {
+        if (command.onlyManageGuild && !msg.member?.hasPermission('ADMINISTRATOR' || 'MANAGE_GUILD')) {
+          msg.reply('У вас недостаточно прав для этой команды.')
+          return
+        }
+        
         command.run(msg, args)
-        return;
+        return
       }
     })
   }
@@ -42,8 +47,8 @@ export const commandHandler = (msg: Discord.Message) => {
 export const vkCommands = [
   new HelpCommand(),
   new AddVkGroupsCommand(),
-  new ShowVkGroupsCommand(),
   new RemoveVkGroupsCommand(),
+  new ShowVkGroupsCommand(),
   new SendVkMemeCommand(),
   new Clear(),
   new RandomNumberCommand(),

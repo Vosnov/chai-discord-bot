@@ -5,8 +5,9 @@ import {VkGroupModel} from "../../models/vkGroup";
 import Command, { ICommand } from '../command';
 
 export default class RemoveVkGroupsCommand extends Command implements ICommand {
-  commandNames: string[] = ['remove', 'r'];
+  commandNames: string[] = ['remove', 'r']
   description = 'Удалить группу из списка'
+  onlyManageGuild = true
 
   async run(msg: Discord.Message, args: string[] | undefined): Promise<void> {
     const candidate = await UserModel.findOne({channelId: msg.guild?.id})
