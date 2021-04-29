@@ -52,7 +52,7 @@ export default class AddVkGroupsCommand extends Command implements ICommand {
 
     user.vkGroup.push(...groupModels)
     user.queue = []
-    MemeModel.deleteMany({ownerId: user._id})
+    await MemeModel.deleteMany({ownerId: user._id})
     await user.save()
     const description = args.length > 1 ? 'Группы успешно сохранены!' : 'Группа успешно сохранена!'
     this.sendDefaultMessage(description, this.color, msg)

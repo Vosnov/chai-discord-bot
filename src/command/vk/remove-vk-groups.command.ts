@@ -25,6 +25,8 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
 
     if (args[0] === 'all') {
       await VkGroupModel.deleteMany({ownerId: user._id})
+      await MemeModel.deleteMany({ownerId: user._id})
+      user.queue = []
       user.vkGroup = []
       await user.save();
 
@@ -41,7 +43,7 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
 
       const accept = async () => {
         user.queue = []
-        MemeModel.deleteMany({ownerId: user._id})
+        await MemeModel.deleteMany({ownerId: user._id})
         await user.save()
         const description = args.length > 1 ? 'Группы удалены!' : 'Группа удалена!'
         this.sendDefaultMessage(description, this.color, msg)

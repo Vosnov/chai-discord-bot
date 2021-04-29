@@ -1,13 +1,12 @@
 import axios from "axios";
 import dotnev from "dotenv";
-import { group } from "node:console";
 import { RandomNumberCommand } from "../command/random-number-command";
 import {IMeme} from "../models/meme";
 import {IGroup, IVkGroupModel} from "../models/vkGroup";
 dotnev.config()
 
 interface IWallDto {
-  response: {
+  response?: {
     count: number,
     items?: IWallItem[]
   }
@@ -71,7 +70,7 @@ export class VkService {
   }
 
   public async getAllMemes(groupModels: IVkGroupModel[]) {
-    if (!groupModels.length) return new Promise<IWall[]>(() => [])
+    if (!groupModels.length) return []
 
     const count = Math.ceil(this.MEME_LIMIT / groupModels.length)
     const wallMemes = groupModels.map(group => this.wallMemes(group.groupId, group.postCount, count));
@@ -106,7 +105,7 @@ export class VkService {
     return images
   }
 
-  public wallMemes(id: number, postCount = 100, count = 10): Promise<IWall> {
+  public wallMemes(id: number, postCount = 100, count = 10): Promise<IWall | undefined> {
     const owner = id ? `&owner_id=-${id}` : ""
     let offset = RandomNumberCommand.randomInteger(0, postCount)
     
@@ -118,6 +117,8 @@ export class VkService {
     const memes: IMeme[] = []
 
     return axios.get<IWallDto>(url).then(res => {
+      if (!res.data.response?.items?.length) return
+
       res.data.response?.items?.forEach(item => {
         if (item?.copyright?.id) return
         if (item.is_pinned) return
