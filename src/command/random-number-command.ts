@@ -11,7 +11,14 @@ export class RandomNumberCommand extends Command implements ICommand {
   }
 
   async run(msg: Discord.Message, args?: string[]): Promise<void> {
-    if (!args) return
+    if (!args?.length) {
+      this.sendDefaultMessage(
+        `Укажите диапазон значений. Пример: ${this.commandNames[0]} 0 10`,
+        this.color,
+        msg
+      )
+      return
+    }
 
     const min = args[0]
     const max = args[1]

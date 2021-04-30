@@ -7,7 +7,7 @@ export default class HelpCommand extends Command implements ICommand {
   description = 'Список команд.'
 
   // vk
-  addRemoveDescription = '`add`, `remove` - могут принимать несколько параметров. \n'
+  addRemoveDescription = '`add`, `remove` - могут принимать несколько параметров через пробел. \n'
   // gif
   gifDescription = '`gif`, `g` - могут принмать ключевое слово в качастве параметра. \n' +
     'Например: `gif meme`. \n'
@@ -27,7 +27,7 @@ export default class HelpCommand extends Command implements ICommand {
       .setDescription('* - Только для владельцев возможности "Управлять сервером" или выше.')
       .setColor(this.color)
       .setTitle('Помощь')
-      .addField('Vk Memes', this.addRemoveDescription + '```' + vkCmdNames + '```')
+      .addField('Vk', this.addRemoveDescription + '```' + vkCmdNames + '```')
       .addField('Gifs', this.gifDescription + '```' + gifCmdNames + '```')
 
     msg.channel.send(embed)

@@ -18,7 +18,7 @@ export const commandHandler = (msg: Discord.Message) => {
 
   if (msg.content?.startsWith(PREFIX)) {
     if (cooldown.has(msg.author.id)) {
-      msg.reply(`Охлади своё трахание на ${COOLDOWN_TIME} сек.`)
+      msg.reply(`Охладись на ${COOLDOWN_TIME} сек.`)
       return;
     } else {
       cooldown.add(msg.author.id)
