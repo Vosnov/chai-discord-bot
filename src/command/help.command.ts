@@ -24,7 +24,7 @@ export default class HelpCommand extends Command implements ICommand {
     const gifCmdNames = this.getCmdNames(gifCommands)
 
     const embed = new Discord.MessageEmbed()
-      .setDescription('* - Только для владельцев возможности "Управлять сервером" или выше.')
+      .setDescription('`*` - Только для владельцев возможности "Управлять сервером" или выше.')
       .setColor(this.color)
       .setTitle('Помощь')
       .addField('Vk', this.addRemoveDescription + '```' + vkCmdNames + '```')

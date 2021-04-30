@@ -22,23 +22,15 @@ export class SendVkMemeCommand extends Command implements ICommand {
       .exec()
     const user = candidate ? candidate : this.createUserModel(msg)
 
-    if (!user.vkGroup.length && user.queue.length === 0) {
-      const walls = await this.vkService.getDefaultGroupWalls()
-      const memes: IMeme[] = []
-      walls.forEach(wall => {
-        if (wall) memes.push(...wall.memes)
-      })
-      user.queue = this.createMemeModels(memes, user)
-    }
-
-    if (user.queue.length <= 1) await this.loadMemes(user)
+    if (!user.vkGroup.length && user.queue.length <= 0) await this.loadDefaultMemes(user)
+    if (user.queue.length <= 0) await this.loadMemes(user)
 
     const meme = this.getRandomMeme(user?.queue);
     if (meme) {
       this.sendMessage(meme, msg)
 
       user.queue = user?.queue.filter(qMeme => qMeme._id !== meme._id);
-      meme.delete()
+      await meme.delete()
       user?.save()
     } else {
       this.sendDefaultMessage('Мемы закончились :( Попробуйте в другой раз', this.color, msg)
@@ -58,6 +50,16 @@ export class SendVkMemeCommand extends Command implements ICommand {
     }
   }
 
+  private async loadDefaultMemes(user: IUserModel) {
+    const walls = await this.vkService.getDefaultGroupWalls()
+    const memes: IMeme[] = []
+    walls.forEach(wall => {
+      if (wall) memes.push(...wall.memes)
+    })
+
+    user.queue = await this.createMemeModels(memes, user)
+  }
+
   private async loadMemes(user: IUserModel) {
     const walls = await this.vkService.getAllMemes(user.vkGroup)
     const memes: IMeme[] = [] 
@@ -74,16 +76,16 @@ export class SendVkMemeCommand extends Command implements ICommand {
       }
     })
 
-    user.queue = this.createMemeModels(memes, user);
+    user.queue = await this.createMemeModels(memes, user);
   }
 
-  private createMemeModels(memes: IMeme[], user: IUserModel) {
+  private async createMemeModels(memes: IMeme[], user: IUserModel) {
     const memeModels: IMemeModel[] = []
-    memes.forEach(meme => {
+    for (const meme of memes) {
       const memeModel = new MemeModel({...meme, ownerId: user._id})
       memeModels.push(memeModel)
-      memeModel.save()
-    })
+      await memeModel.save()
+    }
     return memeModels
   }
 }
