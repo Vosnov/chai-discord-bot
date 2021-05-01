@@ -6,13 +6,13 @@ export class Clear extends Command implements ICommand {
   description = "Очистка сообщений"
 
   async run(msg: Discord.Message, args?: string[]): Promise<void> {
-    if (!args?.length || !Number(args[0])) {
-      this.sendDefaultMessage('Укажите количество сообщений для удаления!', this.color, msg)
+    if (!msg.guild?.me?.hasPermission('MANAGE_MESSAGES')) {
+      this.missPermissionsMessage(msg)
       return
     }
 
-    if (!msg.guild?.me?.hasPermission('MANAGE_MESSAGES')) {
-      this.missPermissionsMessage(msg)
+    if (!args?.length || !Number(args[0])) {
+      this.sendDefaultMessage('Укажите количество сообщений для удаления!', this.color, msg)
       return
     }
 
