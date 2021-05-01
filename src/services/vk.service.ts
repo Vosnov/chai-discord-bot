@@ -105,7 +105,7 @@ export class VkService {
     return images
   }
 
-  public wallMemes(id: number, postCount = 100, count = 10): Promise<IWall | undefined> {
+  public async wallMemes(id: number, postCount = 100, count = 10): Promise<IWall | undefined> {
     const owner = id ? `&owner_id=-${id}` : ""
     let offset = RandomNumberCommand.randomInteger(0, postCount)
     
@@ -116,36 +116,36 @@ export class VkService {
     const url = `${this.baseURL}/wall.get` + options + this.access
     const memes: IMeme[] = []
 
-    return axios.get<IWallDto>(url).then(res => {
-      if (!res.data.response?.items?.length) return
+    const res = await axios.get<IWallDto>(url)
 
-      res.data.response?.items?.forEach(item => {
-        if (item?.copyright?.id) return
-        if (item.is_pinned) return
-        if (item.text.length > 500) return
+    if (!res.data.response?.items?.length) return
 
-        // ad filter
-        if (item.text.includes("vk.com")) return
-        
-        const images: string[] = this.takePhoto(item?.attachments || [])
-        if (!images.length) return
+    res.data.response?.items?.forEach(item => {
+      if (item?.copyright?.id) return
+      if (item.is_pinned) return
+      if (item.text.length > 500) return
 
-        const meme: IMeme = {
-          memeId: item.id,
-          ownerGroupId: item.owner_id,
-          urls: images,
-          date: item.date,
-          text: item.text,
-        }
-        memes.push(meme)
-      })
+      // ad filter
+      if (item.text.includes("vk.com")) return
       
-      return {
-        count: res.data.response.count,
-        memes,
-        groupId: id
+      const images: string[] = this.takePhoto(item?.attachments || [])
+      if (!images.length) return
+
+      const meme: IMeme = {
+        memeId: item.id,
+        ownerGroupId: item.owner_id,
+        urls: images,
+        date: item.date,
+        text: item.text,
       }
+      memes.push(meme)
     })
+    
+    return {
+      count: res.data.response.count,
+      memes,
+      groupId: id
+    }
   }
 
   public async findGroups(links: string[]) {
@@ -169,7 +169,7 @@ export class VkService {
       {id: 187263168, count: 4600}, // achexd
       {id: 12353330, count: 40000}, // peregovorov
       {id: 158619277, count: 900}, // mdlso
-      {id: 158815806, count: 2600 }, // amoraliron
+      {id: 158815806, count: 2600}, // amoraliron
       {id: 154168174, count: 17000}, // mentaldisordeer
       {id: 142574308, count: 14000}, // somka
       {id: 155464693, count: 31000} // karkb

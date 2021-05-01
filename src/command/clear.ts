@@ -11,6 +11,11 @@ export class Clear extends Command implements ICommand {
       return
     }
 
+    if (!msg.guild?.me?.hasPermission('MANAGE_MESSAGES')) {
+      this.missPermissionsMessage(msg)
+      return
+    }
+
     const limit = Number(args[0])
 
     const messages = await msg.channel.messages.fetch({limit})

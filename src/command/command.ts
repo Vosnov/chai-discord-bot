@@ -26,4 +26,8 @@ export default class Command {
 
     msg.channel.send(embed)
   }
+
+  protected missPermissionsMessage(msg: Discord.Message) {
+    this.sendDefaultMessage('Эй! У меня нет прав для этой команды!', this.errorColor, msg)
+  }
 }

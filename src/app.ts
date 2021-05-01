@@ -1,16 +1,17 @@
 import Discord from 'discord.js'
 import dotnev from 'dotenv'
-import {commandHandler, PREFIX} from "./command/command-handler";
+import {CommandHandler, PREFIX} from "./command/command-handler";
 import mongoose from 'mongoose'
 
 dotnev.config()
-const client = new Discord.Client();
+const client = new Discord.Client()
+const commandHandler = new CommandHandler()
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user?.tag || ''}!`);
+  console.log(`Logged in as ${client.user?.tag || ''}!`)
 });
 
-client.on('message', msg => commandHandler(msg));
+client.on('message', msg => commandHandler.run(msg));
 
 const start = async () => {
   await mongoose.connect(process.env.MONGO_URI || '', {
