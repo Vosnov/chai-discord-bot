@@ -16,7 +16,8 @@ export class Clear extends Command implements ICommand {
       return
     }
 
-    const limit = Number(args[0])
+    let limit = Number(args[0])
+    if (limit > 100 || limit <= 0) limit = 100 
 
     const messages = await msg.channel.messages.fetch({limit})
     if (msg.channel instanceof Discord.TextChannel) {
