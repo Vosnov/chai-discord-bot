@@ -21,7 +21,7 @@ export default class TenorService {
   key = `key=${process.env.TENOR_KEY}&`
   filters = '&media_filter=minimal&'
 
-  async randomGifs(searchValue = 'meme', limit = 5) {
+  async randomGifs(searchValue = 'meme', limit = 20) {
     const valueUrl = `q=${searchValue}&`
     const limitUrl = `limit=${limit}&`
     const url = this.baseURL + 'random?' + this.key + valueUrl + this.filters + limitUrl

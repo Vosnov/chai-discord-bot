@@ -149,7 +149,10 @@ export class VkService {
   }
 
   public async findGroups(links: string[]) {
-    const options = `?group_ids=${links.join(',')}`
+    const reg = new RegExp('https://vk.com/')
+    const formattedLinks = links.map(link => link.replace(reg, ''))
+
+    const options = `?group_ids=${formattedLinks.join(',')}`
     const url = `${this.baseURL}/groups.getById` + options + this.access
 
     const groupDto = await axios.get<IGroupDto>(url)
