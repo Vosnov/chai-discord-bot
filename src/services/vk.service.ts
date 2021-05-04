@@ -135,7 +135,6 @@ export class VkService {
         memeId: item.id,
         ownerGroupId: item.owner_id,
         urls: images,
-        date: item.date,
         text: item.text,
       }
       memes.push(meme)

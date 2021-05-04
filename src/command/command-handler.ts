@@ -15,43 +15,52 @@ const cooldown = new Set()
 
 export class CommandHandler extends Command {
   run(msg: Discord.Message) {
-    if (msg.author.bot) return;
+    if (msg.author.bot) return
+    if (!msg.content?.startsWith(PREFIX)) return
 
-    if (msg.content?.startsWith(PREFIX)) {
-      if (cooldown.has(msg.author.id)) {
-        msg.reply(`Охладись на ${COOLDOWN_TIME} сек.`)
-        return;
-      } else {
-        cooldown.add(msg.author.id)
-        setTimeout(() => {
-          cooldown.delete(msg.author.id)
-        }, COOLDOWN_TIME * 1000)
-      }
-
-      const args = msg.content.slice(PREFIX.length).trim().split(' ');
-      const commandName = args.shift()?.toLowerCase() || '';
-
-      commands.forEach(command => {
-        if (command.commandNames.includes(commandName)) {
-          if (command.onlyManageGuild && !msg.member?.hasPermission('ADMINISTRATOR' || 'MANAGE_GUILD')) {
-            msg.reply('У вас недостаточно прав для этой команды.')
-            return
-          }
-
-          if (!msg.guild?.me?.hasPermission('SEND_MESSAGES')) {
-            this.missPermissionsMessage(msg)
-            return
-          }
-          
-          try {
-            command.run(msg, args)
-          } catch (e) {
-            console.log(e)
-            msg.reply('Упс! Что-то пошло не так, попробуй позже.')
-          }
-        }
-      })
+    if (cooldown.has(msg.author.id)) {
+      msg.reply(`Охладись на ${COOLDOWN_TIME} сек.`)
+      return;
+    } else {
+      cooldown.add(msg.author.id)
+      setTimeout(() => {
+        cooldown.delete(msg.author.id)
+      }, COOLDOWN_TIME * 1000)
     }
+
+    const args = msg.content.slice(PREFIX.length).trim().split(' ');
+    const commandName = args.shift()?.toLowerCase() || '';
+
+    if (!msg.guild?.me?.hasPermission('SEND_MESSAGES')) return
+    if (!msg.guild?.me?.hasPermission(['EMBED_LINKS', 'ATTACH_FILES'])) {
+      this.missPermissionsMessage(msg)
+      return
+    }
+    
+    const channelPermission = (msg.channel as Discord.TextChannel)
+      .permissionsFor(msg.guild.me)
+      ?.has(['EMBED_LINKS', 'ATTACH_FILES'])
+
+    if (!channelPermission) {
+      msg.channel.send('Эй у меня нет прав на этом канале!')
+      return
+    }
+
+    commands.forEach(command => {
+      if (command.commandNames.includes(commandName)) {
+        if (command.onlyManageGuild && !msg.member?.hasPermission(['ADMINISTRATOR', 'MANAGE_GUILD'])) {
+          msg.reply('У вас недостаточно прав для этой команды.')
+          return
+        }
+
+        try {
+          command.run(msg, args)
+        } catch (e) {
+          console.log(e)
+          msg.reply('Упс! Что-то пошло не так, попробуй позже.')
+        }
+      }
+    })
   }
 }
 

@@ -7,7 +7,6 @@ export interface IMeme {
   ownerGroupId?: number
   urls: string[]
   text?: string
-  date: number
 }
 
 export interface IMemeModel extends mongoose.Document, IMeme {
@@ -19,7 +18,6 @@ const schema = new mongoose.Schema<IMemeModel>({
   ownerId: {type: Types.ObjectId, ref: 'User', required: true},
   ownerGroupId: {type: Number, required: true},
   text: {type: String, required: false},
-  date: {type: Number, required: true},
   urls: [{type: String, required: true}],
   expire_at: {type: Date, default: Date.now, expires: '30 days'}
 }, {
