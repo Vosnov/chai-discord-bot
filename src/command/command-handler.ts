@@ -14,6 +14,8 @@ const COOLDOWN_TIME = 5;
 const cooldown = new Set()
 
 export class CommandHandler extends Command {
+  requiredPermissions: Discord.PermissionString[] = ['ATTACH_FILES', 'EMBED_LINKS']
+
   run(msg: Discord.Message) {
     if (msg.author.bot) return
     if (!msg.content?.startsWith(PREFIX)) return
@@ -28,20 +30,20 @@ export class CommandHandler extends Command {
       }, COOLDOWN_TIME * 1000)
     }
 
-    const args = msg.content.slice(PREFIX.length).trim().split(' ');
-    const commandName = args.shift()?.toLowerCase() || '';
+    const args = msg.content.slice(PREFIX.length).trim().split(' ')
+    const commandName = args.shift()?.toLowerCase() || ''
 
     if (!msg.guild?.me?.hasPermission('SEND_MESSAGES')) return
-    if (!msg.guild?.me?.hasPermission(['EMBED_LINKS', 'ATTACH_FILES'])) {
+    if (!msg.guild?.me?.hasPermission(this.requiredPermissions)) {
       this.missPermissionsMessage(msg)
       return
     }
     
     const channelPermission = (msg.channel as Discord.TextChannel)
       .permissionsFor(msg.guild.me)
-      ?.has(['EMBED_LINKS', 'ATTACH_FILES'])
 
-    if (!channelPermission) {
+    if (!channelPermission?.has('SEND_MESSAGES')) return
+    if (!channelPermission?.has(this.requiredPermissions)) {
       msg.channel.send('Эй у меня нет прав на этом канале!')
       return
     }

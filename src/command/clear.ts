@@ -21,7 +21,7 @@ export class Clear extends Command implements ICommand {
 
     const messages = await msg.channel.messages.fetch({limit})
     if (msg.channel instanceof Discord.TextChannel) {
-      msg.channel.bulkDelete(messages)
+      msg.channel.bulkDelete(messages, true)
     }
   }
 
