@@ -17,7 +17,10 @@ export default class SendRandomGifCommand extends Command implements ICommand {
 
     if (tag) {
       const gifUrls = await tenorService.randomGifs(tag, 1)
-      this.sendMessage(msg, gifUrls[0])
+        .catch(() => {
+          this.sendMessage(msg)
+        })
+      if (!gifUrls) return
     } else {
       if (user.gifs.length <= 1) {
         user.gifs = await tenorService.randomGifs()
@@ -32,7 +35,7 @@ export default class SendRandomGifCommand extends Command implements ICommand {
 
   };
 
-  private sendMessage(msg: Discrod.Message, gifUrl: string) {
+  private sendMessage(msg: Discrod.Message, gifUrl?: string) {
     if (!gifUrl) {
       this.sendDefaultMessage('Ничего не найдено! :(', this.errorColor, msg)
       return

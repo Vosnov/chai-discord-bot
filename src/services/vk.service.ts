@@ -149,6 +149,7 @@ export class VkService {
 
   public async findGroups(links: string[]) {
     const reg = new RegExp('https://vk.com/')
+    console.log(reg.test(links[0]))
     const formattedLinks = links.map(link => link.replace(reg, ''))
 
     const options = `?group_ids=${formattedLinks.join(',')}`
