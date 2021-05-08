@@ -54,13 +54,11 @@ export class CommandHandler extends Command {
           msg.reply('У вас недостаточно прав для этой команды.')
           return
         }
-
-        try {
-          command.run(msg, args)
-        } catch (e) {
-          console.log(e)
+        
+        command.run(msg, args).catch(e => {
+          console.log(e, 'Run Error')
           msg.reply('Упс! Что-то пошло не так, попробуй позже.')
-        }
+        })
       }
     })
   }
