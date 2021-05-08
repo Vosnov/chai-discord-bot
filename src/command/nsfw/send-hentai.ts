@@ -7,7 +7,7 @@ export enum EHentai {
   pussy = 'pussy',
   cum = 'cum',
   anal = 'anal',
-  blowJob = 'blowJob',
+  blowJob = 'blowjob',
   futa = 'futa',
   neko = 'neko',
   yuri = 'yuri',
