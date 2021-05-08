@@ -1,9 +1,9 @@
 import Discord from 'discord.js';
 import Command, { ICommand } from './command';
-import {gifCommands, vkCommands} from './command-handler'
+import {gifCommands, utilsCommands, vkCommands} from './command-handler'
 
 export default class HelpCommand extends Command implements ICommand {
-  commandNames: string[] = ['help', 'h'];
+  commandNames: string[] = ['help'];
   description = 'Список команд.'
 
   // vk
@@ -22,6 +22,7 @@ export default class HelpCommand extends Command implements ICommand {
   async run(msg: Discord.Message, args: string[] | undefined) {
     const vkCmdNames = this.getCmdNames(vkCommands)
     const gifCmdNames = this.getCmdNames(gifCommands)
+    const utilsCommand = this.getCmdNames(utilsCommands)
 
     const embed = new Discord.MessageEmbed()
       .setDescription('`*` - Только для владельцев возможности "Управлять сервером" или выше.')
@@ -29,6 +30,8 @@ export default class HelpCommand extends Command implements ICommand {
       .setTitle('Помощь')
       .addField('Vk', this.addRemoveDescription + '```' + vkCmdNames + '```')
       .addField('Gifs', this.gifDescription + '```' + gifCmdNames + '```')
+      .addField('NSFW', 'Узнать больше можно используя команду `nsfw`')
+      .addField('Разное', '```' +  utilsCommand + '```') 
 
     msg.channel.send(embed)
   }

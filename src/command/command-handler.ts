@@ -1,4 +1,4 @@
-import Discord from 'discord.js'
+import Discord, { TextChannel } from 'discord.js'
 import {SendVkMemeCommand} from "./vk/send-vk-meme.command";
 import {Clear} from "./clear";
 import {RandomNumberCommand} from "./random-number-command";
@@ -8,6 +8,9 @@ import ShowVkGroupsCommand from "./vk/show-vk-groups.command";
 import HelpCommand from "./help.command";
 import Command, { ICommand } from './command';
 import SendRandomGifCommand from './gif/send-random-gif.command';
+import SendHentaiGifCommand from './nsfw/send-hentai-gif';
+import SendHentaiCommand from './nsfw/send-hentai';
+import NsfwHelp from '../command/nsfw/nsfw-help'
 
 export const PREFIX = 'c!'
 const COOLDOWN_TIME = 5;
@@ -54,6 +57,11 @@ export class CommandHandler extends Command {
           msg.reply('У вас недостаточно прав для этой команды.')
           return
         }
+
+        if (command.nsfwContent && !(msg.channel as TextChannel)?.nsfw) {
+          msg.reply('Команда может быть использована только на NSFW каналах!')
+          return
+        }
         
         command.run(msg, args).catch(e => {
           console.log(e, 'Run Error')
@@ -65,20 +73,30 @@ export class CommandHandler extends Command {
 }
 
 export const vkCommands = [
-  new HelpCommand(),
   new AddVkGroupsCommand(),
   new RemoveVkGroupsCommand(),
   new ShowVkGroupsCommand(),
   new SendVkMemeCommand(),
-  new Clear(),
-  new RandomNumberCommand(),
 ]
 
 export const gifCommands = [
   new SendRandomGifCommand(),
 ]
 
+export const nsfmCommands = [
+  new SendHentaiCommand(),
+  new SendHentaiGifCommand(),
+]
+
+export const utilsCommands = [
+  new Clear(),
+  new RandomNumberCommand(),
+]
+
 export const commands: ICommand[] = [
+  new HelpCommand(),
+  new NsfwHelp(),
   ...vkCommands,
-  ...gifCommands
+  ...gifCommands,
+  ...nsfmCommands,
 ]
