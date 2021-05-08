@@ -10,7 +10,6 @@ export enum EHentai {
   blowJob = 'blowjob',
   futa = 'futa',
   neko = 'neko',
-  yuri = 'yuri',
   tits = 'tits',
   boobs = 'boobs',
   lesbian = 'lesbian',
@@ -69,10 +68,6 @@ export default class SendHentaiCommand extends Command implements ICommand {
       case EHentai.tits:
         const tits = await nekoClient.nsfw.tits()
         this.sendMessage(tits.url, msg)
-        break
-      case EHentai.yuri:
-        const yuri = await nekoClient.nsfw.yuri()
-        this.sendMessage(yuri.url, msg)
         break
       case EHentai.futa:
         const futa = await nekoClient.nsfw.futanari()
