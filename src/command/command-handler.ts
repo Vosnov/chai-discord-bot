@@ -1,20 +1,19 @@
 import Discord, { TextChannel } from 'discord.js'
-import {SendVkMemeCommand} from "./vk/send-vk-meme.command";
-import {Clear} from "./clear";
-import {RandomNumberCommand} from "./random-number-command";
-import AddVkGroupsCommand from "./vk/add-vk-groups.command";
-import RemoveVkGroupsCommand from "./vk/remove-vk-groups.command";
-import ShowVkGroupsCommand from "./vk/show-vk-groups.command";
 import HelpCommand from "./help.command";
 import Command, { ICommand } from './command';
-import SendRandomGifCommand from './gif/send-random-gif.command';
-import SendHentaiGifCommand from './nsfw/send-hentai-gif';
-import SendHentaiCommand from './nsfw/send-hentai';
 import NsfwHelp from '../command/nsfw/nsfw-help'
+import MessageCommands from './msg-commands';
 
 export const PREFIX = 'c!'
 const COOLDOWN_TIME = 5;
 const cooldown = new Set()
+
+
+const allCommands: ICommand[] = [
+  new HelpCommand(),
+  new NsfwHelp(),
+  ...MessageCommands.getValues()
+]
 
 export class CommandHandler extends Command {
   requiredPermissions: Discord.PermissionString[] = ['ATTACH_FILES', 'EMBED_LINKS']
@@ -51,7 +50,7 @@ export class CommandHandler extends Command {
       return
     }
 
-    commands.forEach(command => {
+    allCommands.forEach(command => {
       if (command.commandNames.includes(commandName)) {
         if (command.onlyManageGuild && !msg.member?.hasPermission(['ADMINISTRATOR', 'MANAGE_GUILD'])) {
           msg.reply('У вас недостаточно прав для этой команды.')
@@ -72,32 +71,3 @@ export class CommandHandler extends Command {
   }
 }
 
-export const vkCommands = [
-  new AddVkGroupsCommand(),
-  new RemoveVkGroupsCommand(),
-  new ShowVkGroupsCommand(),
-  new SendVkMemeCommand(),
-]
-
-export const gifCommands = [
-  new SendRandomGifCommand(),
-]
-
-export const nsfmCommands = [
-  new SendHentaiCommand(),
-  new SendHentaiGifCommand(),
-]
-
-export const utilsCommands = [
-  new Clear(),
-  new RandomNumberCommand(),
-]
-
-export const commands: ICommand[] = [
-  new HelpCommand(),
-  new NsfwHelp(),
-  ...vkCommands,
-  ...gifCommands,
-  ...nsfmCommands,
-  ...utilsCommands,
-]

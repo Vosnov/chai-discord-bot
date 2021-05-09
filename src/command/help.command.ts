@@ -1,16 +1,10 @@
 import Discord from 'discord.js';
 import Command, { ICommand } from './command';
-import {gifCommands, utilsCommands, vkCommands} from './command-handler'
+import MessageCommands from './msg-commands';
 
 export default class HelpCommand extends Command implements ICommand {
   commandNames: string[] = ['help'];
   description = 'Список команд.'
-
-  // vk
-  addRemoveDescription = '`add`, `remove` - могут принимать несколько параметров через пробел. \n'
-  // gif
-  gifDescription = '`gif`, `g` - могут принмать ключевое слово в качастве параметра. \n' +
-    'Например: `gif meme`. \n'
 
   getCmdNames(commands: ICommand[]) {
     return commands.map(cmd => {
@@ -19,19 +13,21 @@ export default class HelpCommand extends Command implements ICommand {
     }).join('\n')
   }
 
+  styleDescription(description: string) {
+    return '```' + description + '```'
+  }
+
   async run(msg: Discord.Message, args: string[] | undefined) {
-    const vkCmdNames = this.getCmdNames(vkCommands)
-    const gifCmdNames = this.getCmdNames(gifCommands)
-    const utilsCommand = this.getCmdNames(utilsCommands)
+    const {gifMsgCommand, vkMsgCommand, nsfwMsgCommand, utilsMsgCommand} = MessageCommands
 
     const embed = new Discord.MessageEmbed()
       .setDescription('`*` - Только для владельцев возможности "Управлять сервером" или выше.')
       .setColor(this.color)
       .setTitle('Помощь')
-      .addField('Vk', this.addRemoveDescription + '```' + vkCmdNames + '```')
-      .addField('Gifs', this.gifDescription + '```' + gifCmdNames + '```')
-      .addField('NSFW', 'Узнать больше можно используя команду `nsfw`')
-      .addField('Разное', '```' +  utilsCommand + '```') 
+      .addField(vkMsgCommand.name, this.styleDescription(vkMsgCommand.description))
+      .addField(gifMsgCommand.name, this.styleDescription(gifMsgCommand.description))
+      .addField(nsfwMsgCommand.name, nsfwMsgCommand.description)
+      .addField(utilsMsgCommand.name, this.styleDescription(utilsMsgCommand.description)) 
 
     msg.channel.send(embed)
   }

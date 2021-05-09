@@ -1,6 +1,6 @@
 import axios from "axios";
 import dotnev from "dotenv";
-import { RandomNumberCommand } from "../command/random-number-command";
+import { RandomNumberCommand } from "../command/utils/random-number-command";
 import {IMeme} from "../models/meme";
 import {IGroup, IVkGroupModel} from "../models/vkGroup";
 dotnev.config()

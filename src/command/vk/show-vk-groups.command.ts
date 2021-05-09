@@ -1,7 +1,6 @@
 import Discord from 'discord.js'
 import {UserModel} from "../../models/user";
 import Command, { ICommand } from '../command';
-import { vkCommands } from '../command-handler';
 
 export default class ShowVkGroupsCommand extends Command implements ICommand {
   commandNames: string[] = ['show', 's'];

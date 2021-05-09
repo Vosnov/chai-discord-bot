@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
 import Command, { ICommand } from '../command';
-import { nsfmCommands } from '../command-handler'
+import MessageCommands from '../msg-commands';
 
 export default class NsfwHelp extends Command implements ICommand {
   commandNames: string[] = ['nsfw'];
@@ -15,7 +15,7 @@ export default class NsfwHelp extends Command implements ICommand {
 
   async run(msg: Discord.Message, args: string[] | undefined) {
     const embed = new Discord.MessageEmbed()
-      .setDescription('```' + this.getCmdNames(nsfmCommands) + '```')
+      .setDescription('```' + this.getCmdNames(MessageCommands.nsfwMsgCommand.value) + '```')
       .setColor(this.color)
       .setTitle('NSWF')
 
