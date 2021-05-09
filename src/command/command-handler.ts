@@ -64,8 +64,8 @@ export class CommandHandler extends Command {
         }
         
         command.run(msg, args).catch(e => {
-          console.log(e, 'Run Error')
-          msg.reply('Упс! Что-то пошло не так, попробуй позже.')
+          console.log('Request error', msg.content)
+          msg.reply('Упс! Что-то пошло не так, попробуйте позже.')
         })
       }
     })
@@ -99,4 +99,5 @@ export const commands: ICommand[] = [
   ...vkCommands,
   ...gifCommands,
   ...nsfmCommands,
+  ...utilsCommands,
 ]
