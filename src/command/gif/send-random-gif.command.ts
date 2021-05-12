@@ -19,6 +19,7 @@ export default class SendRandomGifCommand extends Command implements ICommand {
       const gifUrls = await tenorService.randomGifs(tag, 1)
         .catch(() => this.sendMessage(msg))
       if (!gifUrls) return
+      this.sendMessage(msg, gifUrls[0])
     } else {
       if (user.gifs.length <= 1) {
         user.gifs = await tenorService.randomGifs()

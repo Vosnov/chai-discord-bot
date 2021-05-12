@@ -1,4 +1,7 @@
 import axios from "axios"
+import dotnev from 'dotenv'
+
+dotnev.config()
 
 interface TenorDto {
   results: Result[]
