@@ -5,6 +5,7 @@ export interface ICommand {
   commandNames: string[]
   description: string
   onlyManageGuild?: boolean
+  nsfwContent?: boolean
   run: (msg: Discord.Message, args?: string[]) => Promise<void>
 }
 

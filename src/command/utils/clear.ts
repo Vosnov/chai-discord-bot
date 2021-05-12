@@ -1,5 +1,5 @@
 import Discord from "discord.js"
-import Command, { ICommand } from "./command";
+import Command, { ICommand } from "../command";
 
 export class Clear extends Command implements ICommand {
   commandNames: string[] = ['clear', 'clr'];

@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import Command, { ICommand } from './command';
+import Command, { ICommand } from '../command';
 
 export class RandomNumberCommand extends Command implements ICommand {
   commandNames: string[] = ['random', 'rnd'];
