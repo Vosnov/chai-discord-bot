@@ -69,7 +69,7 @@ export class VkService {
     this.access = `&access_token=${VK_TOKEN}&v=${VK_VERSION}`
   }
 
-  public async getAllMemes(groupModels: IVkGroupModel[]) {
+  public async getAllMemes(groupModels: IGroup[]) {
     if (!groupModels.length) return []
 
     const count = Math.ceil(this.MEME_LIMIT / groupModels.length)

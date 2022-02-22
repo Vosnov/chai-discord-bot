@@ -1,43 +1,37 @@
 import Discord from 'discord.js'
-import {IUserModel, UserModel} from "../../models/user";
-import {IMeme, IMemeModel, MemeModel} from "../../models/meme";
+import {IMeme} from "../../models/meme";
 import Command, { ICommand } from '../command';
 import { VkService } from '../../services/vk.service';
+import { Container } from '../../container';
 
 export class SendVkMemeCommand extends Command implements ICommand {
   commandNames = ['meme', 'mem', 'm'];
   description = 'Отправить мем'
 
   vkService = new VkService()
+  container = new Container()
 
-  private getRandomMeme(memes: IMemeModel[] | undefined) {
+  private getRandomMeme() {
+    const memes = this.container.getMemes()
     if (!memes) return undefined
     return memes[Math.floor(Math.random() * memes.length)]
   }
 
   async run(msg: Discord.Message): Promise<void> {
-    const candidate = await UserModel.findOne({channelId: msg.guild?.id})
-      .populate('vkGroup')
-      .populate("queue")
-      .exec()
-    const user = candidate ? candidate : this.createUserModel(msg)
+    const memes = this.container.getMemes()
 
-    if (!user.vkGroup.length && user.queue.length <= 0) await this.loadDefaultMemes(user)
-    if (user.queue.length <= 0) await this.loadMemes(user)
+    if (!this.container.getGroups().length && memes.length <= 0) await this.loadDefaultMemes()
+    if (this.container.getMemes().length <= 0) await this.loadMemes()
 
-    const meme = this.getRandomMeme(user?.queue);
+    const meme = this.getRandomMeme();
     if (meme) {
       this.sendMessage(meme, msg)
-
-      user.queue = user?.queue.filter(qMeme => qMeme._id !== meme._id);
-      await meme.delete()
-      user?.save()
     } else {
       this.sendDefaultMessage('Мемы закончились :( Попробуйте в другой раз', this.color, msg)
     }
   }
 
-  private sendMessage(meme: IMemeModel, msg: Discord.Message) {
+  private sendMessage(meme: IMeme, msg: Discord.Message) {
     if (meme.urls.length === 1) {
       const embed = new Discord.MessageEmbed()
         .setDescription(meme.text)
@@ -50,42 +44,32 @@ export class SendVkMemeCommand extends Command implements ICommand {
     }
   }
 
-  private async loadDefaultMemes(user: IUserModel) {
+  private async loadDefaultMemes() {
     const walls = await this.vkService.getDefaultGroupWalls()
     const memes: IMeme[] = []
     walls.forEach(wall => {
       if (wall) memes.push(...wall.memes)
     })
 
-    user.queue = await this.createMemeModels(memes, user)
+    this.container.setMemes(memes)
   }
 
-  private async loadMemes(user: IUserModel) {
-    const walls = await this.vkService.getAllMemes(user.vkGroup)
+  private async loadMemes() {
+    const groups = this.container.getGroups()
+    const walls = await this.vkService.getAllMemes(groups)
     const memes: IMeme[] = [] 
     walls.forEach(wall => {
       if (!wall) return
 
       memes.push(...wall.memes)
 
-      const userGroup = user.vkGroup.find(group => group.groupId === wall.groupId)
+      const userGroup = groups.find(group => group.groupId === wall.groupId)
 
       if (userGroup) {
         userGroup.postCount = wall.count
-        userGroup?.save()
       }
     })
 
-    user.queue = await this.createMemeModels(memes, user);
-  }
-
-  private async createMemeModels(memes: IMeme[], user: IUserModel) {
-    const memeModels: IMemeModel[] = []
-    for (const meme of memes) {
-      const memeModel = new MemeModel({...meme, ownerId: user._id})
-      memeModels.push(memeModel)
-      await memeModel.save()
-    }
-    return memeModels
+    this.container.setMemes(memes);
   }
 }
