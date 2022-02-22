@@ -11,21 +11,16 @@ export class SendVkMemeCommand extends Command implements ICommand {
   vkService = new VkService()
   container = new Container()
 
-  private getRandomMeme() {
-    const memes = this.container.getMemes()
-    if (!memes) return undefined
-    return memes[Math.floor(Math.random() * memes.length)]
-  }
-
   async run(msg: Discord.Message): Promise<void> {
     const memes = this.container.getMemes()
 
     if (!this.container.getGroups().length && memes.length <= 0) await this.loadDefaultMemes()
     if (this.container.getMemes().length <= 0) await this.loadMemes()
 
-    const meme = this.getRandomMeme();
+    const meme = this.container.getRandomMeme();
     if (meme) {
       this.sendMessage(meme, msg)
+      this.container.getMemes().filter(mem => mem.memeId !== meme.memeId)
     } else {
       this.sendDefaultMessage('Мемы закончились :( Попробуйте в другой раз', this.color, msg)
     }

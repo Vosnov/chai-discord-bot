@@ -18,6 +18,13 @@ export class Container {
     return this.memes
   }
 
+ getRandomMeme() {
+    if (!this.memes) return undefined
+    const meme = this.memes[Math.floor(Math.random() * this.memes.length)]
+    this.memes = this.memes.filter(m => m.memeId !== meme.memeId)
+    return meme
+  }
+
   setGroups(groups: IGroup[]) {
     this.groups = groups
   }
