@@ -1,1 +1,1 @@
-worker dist/app.js
+worker npm run start:prod
