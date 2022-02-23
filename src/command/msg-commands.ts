@@ -8,6 +8,7 @@ import AddVkGroupsCommand from "./vk/add-vk-groups.command"
 import RemoveVkGroupsCommand from "./vk/remove-vk-groups.command"
 import { SendVkMemeCommand } from "./vk/send-vk-meme.command"
 import ShowVkGroupsCommand from "./vk/show-vk-groups.command"
+import { SendAutoVkMemeCommand } from "./vk/send-auto-vk-meme-command"
 
 class MessageCommand {
   name: string
@@ -39,6 +40,7 @@ export default class MessageCommands {
     new RemoveVkGroupsCommand(),
     new ShowVkGroupsCommand(),
     new SendVkMemeCommand(),
+    new SendAutoVkMemeCommand(),
   ])
 
   static gifMsgCommand = new MessageCommand('Gifs', [
@@ -54,7 +56,6 @@ export default class MessageCommands {
     new Clear(),
     new RandomNumberCommand(),
   ])
-  
 
   static getValues() {
     return [
