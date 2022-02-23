@@ -2,12 +2,14 @@ import { IMeme } from "./models/meme";
 import { IGroup } from "./models/vkGroup";
 
 export class Container {
-  memes: IMeme[]
-  groups: IGroup[]
+  private memes: IMeme[]
+  private groups: IGroup[]
+  private gifs: string[]
 
   constructor() {
     this.memes = []
     this.groups = []
+    this.gifs = []
   }
 
   setMemes(memes: IMeme[]) {
@@ -32,4 +34,18 @@ export class Container {
   getGroups() {
     return this.groups
   }
+
+  getGifs() {
+    return this.gifs
+  }
+
+  setGifs(gifs: string[]) {
+    this.gifs = gifs
+  }
+
+  getRandomGif() {
+    return this.gifs[Math.floor(Math.random() * this.gifs.length)];
+  }
 }
+
+export const container = new Container()

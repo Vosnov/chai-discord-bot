@@ -2,7 +2,7 @@ import axios from "axios";
 import dotnev from "dotenv";
 import { RandomNumberCommand } from "../command/utils/random-number-command";
 import {IMeme} from "../models/meme";
-import {IGroup, IVkGroupModel} from "../models/vkGroup";
+import {IGroup} from "../models/vkGroup";
 dotnev.config()
 
 interface IWallDto {
@@ -127,6 +127,7 @@ export class VkService {
 
       // ad filter
       if (item.text.includes("vk.com")) return
+      if (item.text.includes("http")) return
       
       const images: string[] = this.takePhoto(item?.attachments || [])
       if (!images.length) return

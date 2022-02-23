@@ -1,20 +1,14 @@
 import Discord from 'discord.js'
-import { MemeModel } from '../../models/meme';
-import {IUserModel, UserModel} from "../../models/user";
-import {VkGroupModel} from "../../models/vkGroup";
+import { container } from '../../container';
 import Command, { ICommand } from '../command';
 
 export default class RemoveVkGroupsCommand extends Command implements ICommand {
   commandNames: string[] = ['remove', 'r']
   description = 'Удалить группу из списка'
   onlyManageGuild = true
+  container = container
 
   async run(msg: Discord.Message, args: string[] | undefined): Promise<void> {
-    const candidate = await UserModel.findOne({channelId: msg.guild?.id})
-      .populate('vkGroup')
-      .exec()
-    const user = candidate ? candidate : this.createUserModel(msg)
-
     if (!args?.length) {
       const embed = new Discord.MessageEmbed()
         .setTitle('Какие сообщения удалить?')
@@ -24,11 +18,8 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
     }
 
     if (args[0] === 'all') {
-      await VkGroupModel.deleteMany({ownerId: user._id})
-      await MemeModel.deleteMany({ownerId: user._id})
-      user.queue = []
-      user.vkGroup = []
-      await user.save();
+      this.container.setMemes([])
+      this.container.setGroups([])
 
       this.sendDefaultMessage('Группы удалены!', this.color, msg)
     } else {
@@ -42,9 +33,7 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
       }
 
       const accept = async () => {
-        user.queue = []
-        await MemeModel.deleteMany({ownerId: user._id})
-        await user.save()
+        this.container.setMemes([])
         const description = args.length > 1 ? 'Группы удалены!' : 'Группа удалена!'
         this.sendDefaultMessage(description, this.color, msg)
       }
@@ -53,16 +42,16 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
         this.sendDefaultMessage(`Группа под номером: ${num} не найдеа`, this.errorColor, msg)
       }
 
-      this.deleteGroups(groupNumbers, user, accept, err)
+      this.deleteGroups(groupNumbers, accept, err)
     }
   }
 
-  deleteGroups(groupNumbers: number[], user: IUserModel, accept: () => void, err: (num: number) => void) {
+  deleteGroups(groupNumbers: number[], accept: () => void, err: (num: number) => void) {
     for (const num of groupNumbers) {
-      const group = user.vkGroup[num - 1];
+      const groups = this.container.getGroups()
+      const group = groups[num - 1];
       if (group) {
-        user.vkGroup = user.vkGroup.filter(userGroup => userGroup._id !== group._id)
-        group.delete()
+        this.container.setGroups(groups.filter(userGroup => userGroup.groupId !== group.groupId))
       } else {
         err(num)
         return

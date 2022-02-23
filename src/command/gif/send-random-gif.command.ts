@@ -2,17 +2,16 @@ import { Message } from "discord.js";
 import Command, { ICommand } from "../command";
 import Discrod from 'discord.js'
 import TenorService from "../../services/tenor.service";
-import { UserModel } from "../../models/user";
+import { container } from "../../container";
 
 const tenorService = new TenorService()
 
 export default class SendRandomGifCommand extends Command implements ICommand {
   commandNames = ['gif', 'g'];
   description = 'Рандомная гифка';
+  contaner = container
 
   async run(msg: Message, args?: string[] | undefined) {
-    const candidate = await UserModel.findOne({channelId: msg.guild?.id}).exec()
-    const user = candidate ? candidate : this.createUserModel(msg)
     const tag = args?.length ? args[0] : undefined
 
     if (tag) {
@@ -21,15 +20,15 @@ export default class SendRandomGifCommand extends Command implements ICommand {
       if (!gifUrls) return
       this.sendMessage(msg, gifUrls[0])
     } else {
-      if (user.gifs.length <= 1) {
-        user.gifs = await tenorService.randomGifs()
+      const gifs = this.contaner.getGifs()
+      if (gifs.length <= 1) {
+        this.contaner.setGifs(await tenorService.randomGifs())
       }
 
-      const randomGif = this.getRandomGif(user.gifs)
-      user.gifs = user.gifs.filter(gif => gif !== randomGif)
+      const randomGif = this.contaner.getRandomGif()
+      this.contaner.setGifs(gifs.filter(gif => gif !== randomGif))
 
       this.sendMessage(msg, randomGif)
-      user.save()
     }
 
   };
@@ -45,10 +44,6 @@ export default class SendRandomGifCommand extends Command implements ICommand {
       .setImage(gifUrl)
     
     msg.channel.send(embed)
-  }
-
-  private getRandomGif(gifUrls: string[]) {
-    return gifUrls[Math.floor(Math.random() * gifUrls.length)];
   }
   
 }

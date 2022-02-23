@@ -2,14 +2,14 @@ import Discord from 'discord.js'
 import {IMeme} from "../../models/meme";
 import Command, { ICommand } from '../command';
 import { VkService } from '../../services/vk.service';
-import { Container } from '../../container';
+import { container } from '../../container';
 
 export class SendVkMemeCommand extends Command implements ICommand {
   commandNames = ['meme', 'mem', 'm'];
   description = 'Отправить мем'
 
   vkService = new VkService()
-  container = new Container()
+  container = container
 
   async run(msg: Discord.Message): Promise<void> {
     const memes = this.container.getMemes()
