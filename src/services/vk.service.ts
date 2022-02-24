@@ -169,13 +169,13 @@ export class VkService {
 
   public async getDefaultGroupWalls() {
     const groups = [
-      {id: 187263168, count: 4600}, // achexd
       {id: 12353330, count: 40000}, // peregovorov
       {id: 158619277, count: 900}, // mdlso
       {id: 158815806, count: 2600}, // amoraliron
-      {id: 154168174, count: 17000}, // mentaldisordeer
       {id: 142574308, count: 14000}, // somka
-      {id: 155464693, count: 31000} // karkb
+      {id: 155464693, count: 31000}, // karkb
+      {id: 189785884, count: 4800}, // lyagushat
+      {id: 199597097, count: 1700} // pikchydlyavp
     ]
 
     const walls = groups.map(group => this.wallMemes(group.id, group.count, 7))
