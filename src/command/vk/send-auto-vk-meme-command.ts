@@ -8,6 +8,7 @@ export class SendAutoVkMemeCommand extends Command implements ICommand {
   interval?: NodeJS.Timeout
   resetComand = 'reset'
   memeCommand = new SendVkMemeCommand()
+  onlyManageGuild = true;
 
   async run(msg: Message, args?: string[] | undefined) {
     if (!args?.length) {
@@ -28,8 +29,10 @@ export class SendAutoVkMemeCommand extends Command implements ICommand {
     }
 
     if (args[0].includes('m')) {
-      const time = parseInt(args[0])
+      let time = parseInt(args[0])
       
+      if (time <= 0) time = 1
+
       if (this.interval) clearInterval(this.interval)
 
       this.interval = setInterval(() => {
