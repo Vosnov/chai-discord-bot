@@ -1,5 +1,5 @@
 import Discord from 'discord.js'
-import Command, { ICommand } from '../command';
+import Command, { Channel, ICommand } from '../command';
 
 export class RandomNumberCommand extends Command implements ICommand {
   commandNames: string[] = ['random', 'rnd'];
@@ -10,7 +10,7 @@ export class RandomNumberCommand extends Command implements ICommand {
     return Math.floor(rand);
   }
 
-  async run(msg: Discord.Message, args?: string[]): Promise<void> {
+  async run(msg: Channel, args?: string[]): Promise<void> {
     if (!args || args.length < 2) {
       this.sendDefaultMessage(
         `Укажите диапазон значений. Пример: ${this.commandNames[0]} 0 10`,
@@ -32,7 +32,7 @@ export class RandomNumberCommand extends Command implements ICommand {
     const embed = new Discord.MessageEmbed()
       .setTitle(randomNumber)
       .setColor(this.color)
-    msg.channel.send(embed)
+    msg.send(embed)
   }
 
 }

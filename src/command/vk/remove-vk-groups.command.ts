@@ -1,6 +1,6 @@
 import Discord from 'discord.js'
 import { container } from '../../container';
-import Command, { ICommand } from '../command';
+import Command, { Channel, ICommand } from '../command';
 
 export default class RemoveVkGroupsCommand extends Command implements ICommand {
   commandNames: string[] = ['remove', 'r']
@@ -8,12 +8,12 @@ export default class RemoveVkGroupsCommand extends Command implements ICommand {
   onlyManageGuild = true
   container = container
 
-  async run(msg: Discord.Message, args: string[] | undefined): Promise<void> {
+  async run(msg: Channel, args: string[] | undefined): Promise<void> {
     if (!args?.length) {
       const embed = new Discord.MessageEmbed()
         .setTitle('Какие сообщения удалить?')
         .setDescription('all - все ИЛИ номер группы. Номер группы можно посмотреть в `show`')
-      msg.channel.send(embed)
+      msg.send(embed)
       return
     }
 

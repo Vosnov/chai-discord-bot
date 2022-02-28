@@ -1,5 +1,5 @@
 import { Message } from "discord.js";
-import Command, { ICommand } from "../command";
+import Command, { Channel, ICommand } from "../command";
 import Discrod from 'discord.js'
 import TenorService from "../../services/tenor.service";
 import { container } from "../../container";
@@ -11,7 +11,7 @@ export default class SendRandomGifCommand extends Command implements ICommand {
   description = 'Рандомная гифка';
   contaner = container
 
-  async run(msg: Message, args?: string[] | undefined) {
+  async run(msg: Channel, args?: string[] | undefined) {
     const tag = args?.length ? args[0] : undefined
 
     if (tag) {
@@ -33,7 +33,7 @@ export default class SendRandomGifCommand extends Command implements ICommand {
 
   };
 
-  private sendMessage(msg: Discrod.Message, gifUrl?: string) {
+  private sendMessage(msg: Channel, gifUrl?: string) {
     if (!gifUrl) {
       this.sendDefaultMessage('Ничего не найдено! :(', this.errorColor, msg)
       return
@@ -43,7 +43,7 @@ export default class SendRandomGifCommand extends Command implements ICommand {
       .setColor(this.color)
       .setImage(gifUrl)
     
-    msg.channel.send(embed)
+    msg.send(embed)
   }
   
 }

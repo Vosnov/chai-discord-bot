@@ -5,3 +5,4 @@ dist
 .env
 .npm
 .env.test
+cache

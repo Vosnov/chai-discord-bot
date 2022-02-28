@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import Command, { ICommand } from './command';
+import Command, { Channel, ICommand } from './command';
 import MessageCommands from './msg-commands';
 
 export default class HelpCommand extends Command implements ICommand {
@@ -17,7 +17,7 @@ export default class HelpCommand extends Command implements ICommand {
     return '```' + description + '```'
   }
 
-  async run(msg: Discord.Message, args: string[] | undefined) {
+  async run(msg: Channel, args: string[] | undefined) {
     const {gifMsgCommand, vkMsgCommand, nsfwMsgCommand, utilsMsgCommand} = MessageCommands
 
     const embed = new Discord.MessageEmbed()
@@ -29,7 +29,7 @@ export default class HelpCommand extends Command implements ICommand {
       .addField(nsfwMsgCommand.name, nsfwMsgCommand.description)
       .addField(utilsMsgCommand.name, this.styleDescription(utilsMsgCommand.description)) 
 
-    msg.channel.send(embed)
+    msg.send(embed)
   }
 
 }

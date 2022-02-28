@@ -1,13 +1,13 @@
 import Discord from 'discord.js'
 import { container } from '../../container';
-import Command, { ICommand } from '../command';
+import Command, { Channel, ICommand } from '../command';
 
 export default class ShowVkGroupsCommand extends Command implements ICommand {
   commandNames: string[] = ['show', 's'];
   description = 'Просмотр групп из списка'
   container = container
 
-  async run(msg: Discord.Message, args: string[] | undefined): Promise<void> {
+  async run(msg: Channel, args: string[] | undefined): Promise<void> {
     if (!this.container.getGroups().length) {
       this.sendDefaultMessage('Список групп пуст! Группы можно пополонить командой `add`', this.color, msg)
       return
@@ -19,7 +19,7 @@ export default class ShowVkGroupsCommand extends Command implements ICommand {
       .setColor(this.color)
       .addField('Список групп:', '```' + groupNames.join('\n') + '```')
 
-    msg.channel.send(embed)
+    msg.send(embed)
   }
 
 }

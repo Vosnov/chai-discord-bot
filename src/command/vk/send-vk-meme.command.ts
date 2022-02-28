@@ -1,6 +1,6 @@
 import Discord from 'discord.js'
 import {IMeme} from "../../models/meme";
-import Command, { ICommand } from '../command';
+import Command, { Channel, ICommand } from '../command';
 import { VkService } from '../../services/vk.service';
 import { container } from '../../container';
 
@@ -11,7 +11,7 @@ export class SendVkMemeCommand extends Command implements ICommand {
   vkService = new VkService()
   container = container
 
-  async run(msg: Discord.Message): Promise<void> {
+  async run(msg: Channel): Promise<void> {
     const memes = this.container.getMemes()
 
     if (!this.container.getGroups().length && memes.length <= 0) await this.loadDefaultMemes()
@@ -26,16 +26,16 @@ export class SendVkMemeCommand extends Command implements ICommand {
     }
   }
 
-  private sendMessage(meme: IMeme, msg: Discord.Message) {
+  private sendMessage(meme: IMeme, msg: Channel) {
     if (meme.urls.length === 1) {
       const embed = new Discord.MessageEmbed()
         .setDescription(meme.text)
         .setImage(meme.urls[0])
         .setColor(this.color)
       
-      msg.channel.send(embed)
+      msg.send(embed)
     } else {
-      msg.channel.send(meme?.text, {files: meme.urls})
+      msg.send(meme?.text, {files: meme.urls})
     }
   }
 

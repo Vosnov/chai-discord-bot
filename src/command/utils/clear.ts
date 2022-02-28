@@ -1,16 +1,12 @@
 import Discord from "discord.js"
-import Command, { ICommand } from "../command";
+import Command, { Channel, ICommand } from "../command";
 
 export class Clear extends Command implements ICommand {
   commandNames: string[] = ['clear', 'clr'];
   description = "Очистка сообщений"
+  onlyManageGuild = true
 
-  async run(msg: Discord.Message, args?: string[]): Promise<void> {
-    if (!msg.guild?.me?.hasPermission('MANAGE_MESSAGES')) {
-      this.missPermissionsMessage(msg)
-      return
-    }
-
+  async run(msg: Channel, args?: string[]): Promise<void> {
     if (!args?.length || !Number(args[0])) {
       this.sendDefaultMessage('Укажите количество сообщений для удаления!', this.color, msg)
       return
@@ -19,9 +15,9 @@ export class Clear extends Command implements ICommand {
     let limit = Number(args[0])
     if (limit > 100 || limit <= 0) limit = 100 
 
-    const messages = await msg.channel.messages.fetch({limit})
-    if (msg.channel instanceof Discord.TextChannel) {
-      msg.channel.bulkDelete(messages, true)
+    const messages = await msg.messages.fetch({limit})
+    if (msg instanceof Discord.TextChannel) {
+      msg.bulkDelete(messages, true)
     }
   }
 

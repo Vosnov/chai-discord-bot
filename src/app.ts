@@ -8,6 +8,7 @@ const commandHandler = new CommandHandler()
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag || ''}!`)
+  commandHandler.start(client)
 });
 
 client.on('message', msg => commandHandler.run(msg));

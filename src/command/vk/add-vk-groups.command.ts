@@ -1,6 +1,6 @@
 import Discord from 'discord.js'
 import {VkService} from "../../services/vk.service";
-import Command, {ICommand} from "../command";
+import Command, {Channel, ICommand} from "../command";
 import { container } from '../../container';
 
 export default class AddVkGroupsCommand extends Command implements ICommand {
@@ -11,7 +11,7 @@ export default class AddVkGroupsCommand extends Command implements ICommand {
 
   readonly GROUP_LIMIT = 10;
 
-  async run(msg: Discord.Message, args: string[] | undefined) {
+  async run(msg: Channel, args: string[] | undefined) {
     if (this.container.getGroups().length >= this.GROUP_LIMIT) {
       this.sendDefaultMessage(
         `Превышен лимит групп. Макс. число групп ${this.GROUP_LIMIT}`,
@@ -26,7 +26,7 @@ export default class AddVkGroupsCommand extends Command implements ICommand {
         .setColor(this.color)
         .setTitle('Какие группы добавить?')
         .addField('Пример:', 'https://vk.com/myGroup \n ИЛИ \n myGroup')
-      msg.channel.send(embed)
+      msg.send(embed)
       return
     }
 

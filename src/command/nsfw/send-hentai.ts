@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 import nekoClient from "../../neko";
-import Command, { ICommand } from "../command"
+import Command, { Channel, ICommand } from "../command"
 import Discord from 'discord.js'
 
 export enum EHentai {
@@ -30,7 +30,7 @@ export default class SendHentaiCommand extends Command implements ICommand {
     return tags
   }
 
-  async run (msg: Message, args?: string[] | undefined) {
+  async run (msg: Channel, args?: string[] | undefined) {
     if (!args?.length) {
       this.sendHentaiMessage(msg)
       return
@@ -78,15 +78,15 @@ export default class SendHentaiCommand extends Command implements ICommand {
     }
   }
 
-  private sendMessage(imageUrl: string, msg: Discord.Message) {
+  private sendMessage(imageUrl: string, msg: Channel) {
     const embed = new Discord.MessageEmbed()
     .setColor(this.color)
     .setImage(imageUrl)
   
-    msg.channel.send(embed)
+    msg.send(embed)
   }
 
-  private async sendHentaiMessage(msg: Discord.Message) {
+  private async sendHentaiMessage(msg: Channel) {
     const hentai = await nekoClient.nsfw.hentai();
     this.sendMessage(hentai.url, msg)
   }

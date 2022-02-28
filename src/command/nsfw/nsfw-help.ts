@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import Command, { ICommand } from '../command';
+import Command, { Channel, ICommand } from '../command';
 import MessageCommands from '../msg-commands';
 
 export default class NsfwHelp extends Command implements ICommand {
@@ -13,13 +13,13 @@ export default class NsfwHelp extends Command implements ICommand {
     }).join('\n')
   }
 
-  async run(msg: Discord.Message, args: string[] | undefined) {
+  async run(msg: Channel, args: string[] | undefined) {
     const embed = new Discord.MessageEmbed()
       .setDescription('```' + this.getCmdNames(MessageCommands.nsfwMsgCommand.value) + '```')
       .setColor(this.color)
       .setTitle('NSWF')
 
-    msg.channel.send(embed)
+    msg.send(embed)
   }
 
 }
