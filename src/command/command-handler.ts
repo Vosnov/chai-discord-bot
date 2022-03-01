@@ -3,8 +3,7 @@ import HelpCommand from "./help.command";
 import Command, { ICommand } from './command';
 import NsfwHelp from '../command/nsfw/nsfw-help'
 import MessageCommands from './msg-commands';
-import { Cache, cacheFile } from '../models/cache';
-import { readFile } from 'fs/promises';
+import { CacheModel } from '../models/cache';
 
 export const PREFIX = 'c!'
 const COOLDOWN_TIME = 5;
@@ -21,27 +20,22 @@ export class CommandHandler extends Command {
   requiredPermissions: Discord.PermissionString[] = ['ATTACH_FILES', 'EMBED_LINKS']
 
   async start(client: Discord.Client) {
-    const cache = await this.readCache()
-    if (!cache) return
+    const cacheModels = await CacheModel.find({})
 
-    const channel = await client.channels.fetch(cache.channelId)
-
-    if (channel.isText()) {
-      if (channel instanceof Discord.TextChannel) {
-        allCommands.forEach(command => {
-          if (command.runOnStart) command.runOnStart(channel)
-        })
+    cacheModels.forEach(async (cacheModel) => {
+      const channel = await client.channels.fetch(cacheModel.channelId)
+      if (channel.isText()) {
+        if (channel instanceof Discord.TextChannel) {
+          allCommands.forEach(command => {
+            if (command.runOnStart) command.runOnStart(channel)
+          })
+        }
       }
-    }
+    })
   }
 
-  async readCache() {
-    try {
-      const file = await readFile(cacheFile, 'utf8')
-      return JSON.parse(file) as Cache
-    } catch {
-      console.log('No cache')
-    }
+  async readCache(channelId: string) {
+    return CacheModel.findOne({channelId})
   }
 
   run(msg: Discord.Message) {

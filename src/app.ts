@@ -1,6 +1,7 @@
 import Discord from 'discord.js'
 import dotnev from 'dotenv'
 import {CommandHandler, PREFIX} from "./command/command-handler";
+import mongoose from 'mongoose'
 
 dotnev.config()
 const client = new Discord.Client()
@@ -14,6 +15,7 @@ client.on('ready', () => {
 client.on('message', msg => commandHandler.run(msg));
 
 const start = async () => {
+  await mongoose.connect(process.env.MONGO_URI || '')
   await client.login(process.env.BOT_TOKEN);
   client.user?.setActivity(`${PREFIX}help - to help`, { type: 'PLAYING' });
 }

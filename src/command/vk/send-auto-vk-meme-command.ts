@@ -1,9 +1,7 @@
-import Discord, {Message} from "discord.js";
+import Discord from "discord.js";
 import Command, { ICommand, Channel } from "../command";
 import { SendVkMemeCommand } from "./send-vk-meme.command";
-import { mkdir, readFile, unlink, writeFile } from "fs/promises";
-import { Cache, cacheDir, cacheFile } from "../../models/cache";
-import { existsSync } from "fs";
+import { CacheModel } from "../../models/cache";
 
 export class SendAutoVkMemeCommand extends Command implements ICommand {
   commandNames = ['automeme', 'am']
@@ -14,7 +12,7 @@ export class SendAutoVkMemeCommand extends Command implements ICommand {
   onlyManageGuild = true
   
   async runOnStart(msg: Channel) {
-    const cache = await this.readCache()
+    const cache = await this.readCache(msg.id)
     if (!cache) return
 
     this.interval = setInterval(() => {
@@ -38,7 +36,7 @@ export class SendAutoVkMemeCommand extends Command implements ICommand {
       if (!this.interval) return
       clearInterval(this.interval)
       this.sendDefaultMessage('Рассылка сброшена!', this.color, msg)
-      this.clearCache()
+      this.clearCache(msg.id)
       return
     }
 
@@ -61,29 +59,24 @@ export class SendAutoVkMemeCommand extends Command implements ICommand {
     this.sendDefaultMessage('Упс! Что-то пошло не так', this.color, msg)
   } 
   
-  clearCache() {
-    unlink(cacheFile)
+  async clearCache(channelId: string) {
+    await CacheModel.findOneAndDelete({channelId})
   }
 
   async setCache(channelId: string, time: number) {
-    if (!existsSync(cacheDir)){
-      await mkdir(cacheDir);
+    const cacheModel = await CacheModel.findOne({channelId})
+
+    if (cacheModel) {
+      cacheModel.channelId = channelId
+      cacheModel.time = time
+      await cacheModel.save()
+      return
     }
 
-    const cache: Cache = {
-      channelId,
-      time,
-    }
-    const json = JSON.stringify(cache)
-    writeFile(cacheFile, json)
+    new CacheModel({channelId, time}).save()
   }
 
-  async readCache() {
-    try {
-      const file = await readFile(cacheFile, 'utf8')
-      return JSON.parse(file) as Cache
-    } catch {
-      console.log('No cache')
-    }
+  async readCache(channelId: string) {
+    return CacheModel.findOne({channelId})
   }
 }
