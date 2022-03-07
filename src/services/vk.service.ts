@@ -175,7 +175,8 @@ export class VkService {
       {id: 142574308, count: 14000}, // somka
       {id: 155464693, count: 31000}, // karkb
       {id: 189785884, count: 4800}, // lyagushat
-      {id: 199597097, count: 1700} // pikchydlyavp
+      {id: 199597097, count: 1700}, // pikchydlyavp
+      {id: 205756644, count: 280} // ebl_blya
     ]
 
     const walls = groups.map(group => this.wallMemes(group.id, group.count, 7))

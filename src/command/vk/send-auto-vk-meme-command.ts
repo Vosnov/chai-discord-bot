@@ -10,6 +10,8 @@ export class SendAutoVkMemeCommand extends Command implements ICommand {
   resetComand = 'reset'
   memeCommand = new SendVkMemeCommand()
   onlyManageGuild = true
+
+  reg = new RegExp(/[0-9]{2,3}['m']/g)
   
   async runOnStart(msg: Channel) {
     const cache = await this.readCache(msg.id)
@@ -40,7 +42,7 @@ export class SendAutoVkMemeCommand extends Command implements ICommand {
       return
     }
 
-    if (args[0].includes('m')) {
+    if (args[0].match(this.reg)) {
       let time = parseInt(args[0])
       
       if (time <= 0) time = 1
